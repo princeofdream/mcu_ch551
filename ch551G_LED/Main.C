@@ -15,32 +15,38 @@
 
 #define	LED_PIN 5
 sbit	LED=P1^5;
+#if 1
 int led_main( )
+#else
+main()
+#endif
 {
 
-	  /*
+
     CfgFsys( );                                                                //CH554时钟选择配置
     mDelaymS(5);
-    P1_DIR_PU &= 0x0C;
-    P1_MOD_OC = P1_MOD_OC & ~(1<<LED_PIN);
-    P1_DIR_PU = P1_DIR_PU |	(1<<LED_PIN);
+    //P1_DIR_PU &= 0x0C;
+    //P1_MOD_OC = P1_MOD_OC & ~(1<<LED_PIN);
+    //P1_DIR_PU = P1_DIR_PU |	(1<<LED_PIN);
   //  TouchKeyQueryCyl2ms();                                                     //TouchKey查询周期2ms
   //  GetTouckKeyFreeBuf();                                                      //获取采样基准值
 
-   // UART1Setup();
-     EA = 1;
-	*/
+	mInitSTDIO();
+    //UART1Setup();
+    //EA = 1;
+
 
 	P3_DIR_PU=0xFF;
     while(1)
     {
         mDelaymS(200);
-       // LED=!LED;
+        //LED=!LED;
 
-		P3=~P3;
-		P1=0;
+		//P3=~P3;
+		//P1=0;
 	 
-        //CH554UART1SendByte('R');
+      CH554UART0SendByte('R');
+			CH554UART0SendByte('S');
 
 
        
