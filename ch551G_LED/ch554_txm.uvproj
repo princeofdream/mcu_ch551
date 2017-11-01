@@ -366,6 +366,11 @@
               <FileType>1</FileType>
               <FilePath>.\TouchKey.C</FilePath>
             </File>
+            <File>
+              <FileName>CompatibilityHID.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\CompatibilityHID.C</FilePath>
+            </File>
           </Files>
         </Group>
       </Groups>

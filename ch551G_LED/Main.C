@@ -15,7 +15,7 @@
 
 #define	LED_PIN 5
 sbit	LED=P1^5;
-main( )
+int led_main( )
 {
 
 	  /*
