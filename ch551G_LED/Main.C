@@ -15,6 +15,8 @@
 
 #define	LED_PIN 5
 sbit	LED=P1^5;
+sbit	IR_PIN=P3^4;
+sbit	LED_G=P3^0;
 #if 1
 int led_main( )
 #else
@@ -39,14 +41,16 @@ main()
 	P3_DIR_PU=0xFF;
     while(1)
     {
-        mDelaymS(200);
+        mDelaymS(500);
         //LED=!LED;
 
 		//P3=~P3;
 		//P1=0;
+		IR_PIN = ! IR_PIN;
+		LED_G = ! LED_G;
 	 
-      CH554UART0SendByte('R');
-			CH554UART0SendByte('S');
+		CH554UART0SendByte('R');
+		CH554UART0SendByte('S');
 
 
        
