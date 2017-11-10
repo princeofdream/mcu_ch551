@@ -10,6 +10,7 @@
 
 #include "./CH554.H"
 #include "./Debug.H"
+#include "./Descriptor.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -28,62 +29,188 @@ USB_SETUP_REQ   SetupReqBuf;                                                    
 
 sbit Ep2InKey = P1^5;                                                              //K1按键
 #pragma  NOAREGS
+
+
+#define SWAP16(x)  ((((UINT16)(x))<<8)|(((UINT16)(x))>>8))
+
+
 /*设备描述符*/
 UINT8C DevDesc[18] =
 {
-	0x12,0x01,0x10,0x01,0x00,0x00,0x00,THIS_ENDP0_SIZE,
-	0x31,0x51,0x07,0x20,0x00,0x00,0x01,0x02,
+	0x12,					//sizeof(DevDesc)	设备描述符字节数大小
+	USB_DEVICE_DESCRIPTOR,	//类型编号
+	0x10,0x01,				//USB版本号 USB 1.1
+	0x00,					//USB分配的设备类code
+	0x00,					//USB分配的子类code
+	0x00,					//USB分配的设备协议code
+	THIS_ENDP0_SIZE,		//Endpoint 0 MAX package size
+	0x31,0x51,				//VID
+	0x07,0x20,				//PID
+	0x00,0x00,				//出厂编号
+	0x01,0x02,
 	0x03,0x01
 };
 
 UINT8C CfgDesc[41] =
 {
-    0x09,0x02,0x29,0x00,0x01,0x01,0x04,0xA0,0x23,               //配置描述符
-    0x09,0x04,0x00,0x00,0x02,0x03,0x00,0x00,0x05,               //接口描述符
-    0x09,0x21,0x00,0x01,0x00,0x01,0x22,0x22,0x00,               //HID类描述符
-    0x07,0x05,0x82,0x03,THIS_ENDP0_SIZE,0x00,0x18,              //端点描述符
-    0x07,0x05,0x02,0x03,THIS_ENDP0_SIZE,0x00,0x18,              //端点描述符
+	//配置描述符
+	//{
+		0x09,									//描述符字节数大小
+		USB_CONFIGURATION_DESCRIPTOR,
+		//类型编号
+		0x29,0x00,0x01,0x01,0x04,0xA0,0x23,
+	//}
+	//接口描述符
+	//{
+		0x09,							//描述符字节数大小
+		USB_INTERFACE_DESCRIPTOR,		//类型编号
+		0x00,0x00,0x02,0x03,0x00,0x00,0x05,
+	//}
+	//HID类描述符
+	//{
+		0x09,							//描述符字节数大小
+		USB_HID_DESCRIPTOR,				//类型编号
+		0x01,0x01,						//协议版本号 1.1 org //0x00,0x01,
+		0x00,
+		NUM_SUB_DESCRIPTORS,			//下级描述符的数量 1
+		//{
+			USB_REPORT_DESCRIPTOR,		//
+			//0x22,0x00,					// sizeof(HIDRepDesc)  34==> 0x0022(34)// 47==> 0x002F
+			0x2F,0x00,				// sizeof(HIDRepDesc)  34==> 0x0022(34)// 47==> 0x002F
+		//}
+	//}
+	//端点描述符
+	//{
+#if 1
+		//端点1输入
+		//{
+			0x07,							//描述符字节数大小
+			USB_ENDPOINT_DESCRIPTOR,		//类型编号
+			0x82,
+			0x03,
+			THIS_ENDP0_SIZE,
+			0x00,
+			0x18,
+		//}
+		//端点1输出
+		//{
+			0x07,							//描述符字节数大小
+			USB_ENDPOINT_DESCRIPTOR,		//类型编号
+			0x02,
+			0x03,
+			THIS_ENDP0_SIZE,0x00,
+			0x18
+		//}
+#else
+		//端点1输出
+		//{
+			0x07,							//描述符字节数大小
+			USB_ENDPOINT_DESCRIPTOR,		//类型编号
+			POINT_1_OUT,					//端点号，主输出端点 0x01
+			USB_ENDPOINT_TYPE_INTERRUPT,	//传输类型，中断传输
+			THIS_ENDP0_SIZE, 0x00,			//Endpoint max package size 0064 ==> 0x0040 swap --> 40 00
+			0x18,							//中断扫描时间 0x0A ==> 10ms 0x18 ==> 24ms
+		//}
+		//端点1输入
+		//{
+			0x07,							//描述符字节数大小
+			USB_ENDPOINT_DESCRIPTOR,		//类型编号 0x81
+			POINT_1_IN,						//端点号，主输入端点
+			USB_ENDPOINT_TYPE_INTERRUPT,
+			THIS_ENDP0_SIZE,0x00,
+			0x18
+		//}
+#endif
+	//}
 };
-/*字符串描述符 略*/ 
+
+//字符串描述符
+//{
+UINT8X UserEp2Buf[64];                                            //用户数据定义
+// 语言描述符
+// 厂家信息
+// 产品信息
+// 序列号
+//{ size, 类型编号, ...}
+UINT8C	LANGUAGE_ID[] 			= { 0x04, USB_STRING_DESCRIPTOR, 0x09, 0x04 };
+UINT8C	ManufacturerString[] 	= { 0x0E, USB_STRING_DESCRIPTOR, 'v', 0, 's', 0, 't', 0, 'e', 0, 'c', 0, 'g', 0 };
+UINT8C	ProducterString[] 		= { 0x0C, USB_STRING_DESCRIPTOR, 'C', 0, 'H', 0, '5', 0, '5', 0, '1', 0 };
+UINT8C	device_serial_number[]	= { 0x0C, USB_STRING_DESCRIPTOR, '1', 0, '3', 0, '5', 0, '7', 0, '9', 0 };
 
 /*HID类报表描述符*/
-UINT8C HIDRepDesc[ ] =
+UINT8C HIDRepDesc[ 47 ] =
 {
-	0x06, 0x00,0xff,
+	0x06, 0x00, 0xff,
 	0x09, 0x01,
-    0xa1, 0x01,                                                   //集合开始
+    0xA1, 0x01,                                                   //集合开始
+	
+	// The Input report < total 13 >
 	0x09, 0x02,                                                   //Usage Page  用法
 	0x15, 0x00,                                                   //Logical  Minimun
-	0x26, 0x00,0xff,                                              //Logical  Maximun
+	0x26, 0xFF, 0x00,                                              //Logical  Maximun
 	0x75, 0x08,                                                   //Report Size
 	0x95, THIS_ENDP0_SIZE,                                        //Report Counet
 	0x81, 0x06,                                                   //Input
+	
+	// The Output report < total 13 >
 	0x09, 0x02,                                                   //Usage Page  用法
 	0x15, 0x00,                                                   //Logical  Minimun
-	0x26, 0x00,0xff,                                              //Logical  Maximun
+	0x26, 0xFF,0x00,                                              //Logical  Maximun
 	0x75, 0x08,                                                   //Report Size
 	0x95, THIS_ENDP0_SIZE,                                        //Report Counet
 	0x91, 0x06,                                                   //Output
+
+	// The Feature report <total 13 >
+	///
+	0x09, 0x05,     	// Usage ID - vendor defined XXX
+    0x15, 0x00,     	// Logical Minimum (0)
+    0x26, 0xFF, 0x00,   // Logical Maximum (255)
+    0x75, 0x08,			// Report Size (8 bits)
+    0x95, 0x02, 		// Report Count (2 fields) XXX
+    0xB1, 0x02,     	// Feature (Data, Variable, Absolute)   XXX
+	///
+	
 	0xC0
 };
 
-// unsigned char  code SerDes[]={
-//                           0x28,0x03,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-//                           0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-//                           0x00,0x00,0x00,0x00,0x00,0x49,0x00,0x43,0x00,0x42,
-//                           0x00,0x43,0x00,0x31,0x00,0x00,0x00,0x00,0x00,0x00
-//                           };                                   //字符串描述符
 
-UINT8X UserEp2Buf[64];                                            //用户数据定义
+char code HidUseReportDescriptor[47] = 
+{
+	// total 7
+  	0x06, 0xA0, 0xFF,	// Usage page (vendor defined) XXX
+  	0x09, 0x01,			// Usage ID (vendor defined)
+  	0xA1, 0x01,			// Collection (application)
+
+	// The Input report < total 13 >
+	0x09, 0x03,     	// Usage ID - vendor defined XXX
+    0x15, 0x00,     	// Logical Minimum (0)
+    0x26, 0xFF, 0x00,   // Logical Maximum (255) XXX
+    0x75, 0x08,     	// Report Size (8 bits)
+    0x95, 0x02,     	// Report Count (2 fields) XXX
+    0x81, 0x02,     	// Input (Data, Variable, Absolute)  XXX
+
+	// The Output report < total 13 >
+    0x09, 0x04,     	// Usage ID - vendor defined
+    0x15, 0x00,     	// Logical Minimum (0)
+    0x26, 0xFF, 0x00,   // Logical Maximum (255)
+    0x75, 0x08,     	// Report Size (8 bits)
+    0x95, 0x02,     	// Report Count (2 fields)
+    0x91, 0x02,      	// Output (Data, Variable, Absolute)  
+
+	// The Feature report <total 13 >
+	///
+    0x09, 0x05,     	// Usage ID - vendor defined XXX
+    0x15, 0x00,     	// Logical Minimum (0)
+    0x26, 0xFF, 0x00,   // Logical Maximum (255)
+    0x75, 0x08,			// Report Size (8 bits)
+    0x95, 0x02, 		// Report Count (2 fields) XXX
+    0xB1, 0x02,     	// Feature (Data, Variable, Absolute)   XXX
+	///
+
+ 	0xC0	// end collection
+};
 
 
-// 语言描述符
-UINT8C	MyLangDescr[] = { 0x04, 0x03, 0x09, 0x04 };
-// 厂家信息
-UINT8C	MyManuInfo[] = { 0x0E, 0x03, 'v', 0, 's', 0, 't', 0, 'e', 0, 'c', 0, 'g', 0 };
-// 产品信息
-UINT8C	MyProdInfo[] = { 0x0C, 0x03, 'C', 0, 'H', 0, '5', 0, '5', 0, '1', 0 };
-UINT8C	snDescr[] = { 0x0C, 0x03, '1', 0, '3', 0, '5', 0, '7', 0, '9', 0 };
 
 
 /*******************************************************************************
@@ -229,24 +356,24 @@ void    DeviceInterrupt( void ) interrupt INT_NO_USB using 1                    
 							{
 							case 1:
 								printf("return manufacture info\n");
-								pDescr = (PUINT8)( &MyManuInfo[0] );
-								len = sizeof( MyManuInfo );
+								pDescr = (PUINT8)( &ManufacturerString[0] );
+								len = sizeof( ManufacturerString );
 								Ready = 1;
 								break;
 							case 2:
 								printf("return prod info\n");
-								pDescr = (PUINT8)( &MyProdInfo[0] );
-								len = sizeof( MyProdInfo );
+								pDescr = (PUINT8)( &ProducterString[0] );
+								len = sizeof( ProducterString );
 								break;
 							case 0:
 								printf("return lang info\n");
-								pDescr = (PUINT8)( &MyLangDescr[0] );
-								len = sizeof( MyLangDescr );
+								pDescr = (PUINT8)( &LANGUAGE_ID[0] );
+								len = sizeof( LANGUAGE_ID );
 								break;
 							case 3:
 								printf("return sn info\n");
-								pDescr = (PUINT8)( &snDescr[0] );
-								len = sizeof( snDescr );
+								pDescr = (PUINT8)( &device_serial_number[0] );
+								len = sizeof( device_serial_number );
 								break;
 							default:
 								printf("return unsupport str desc\n");
@@ -510,7 +637,7 @@ main()
 	Ready = 0;
 	while(1)
 	{
-		#if 0
+		#if 1
 		if(Ready && (Ep2InKey==0))
 		#else
 		if(Ready)
