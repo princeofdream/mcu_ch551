@@ -7,12 +7,14 @@
 * Description        : CH554 触摸按键采样间隔设置、通道选择和切换和中断处理函数   
 *******************************************************************************/
 
-#include "CH554.H"                                                       
+#include "CH552.H"                                                       
 #include "Debug.H"
 #include "TouchKey.H"
 #include <stdio.h>
 
 #pragma  NOAREGS
+
+#if 0
 
 UINT16	KeyFree[KEY_LAST-KEY_FIRST+1];                                        //触摸空闲值存储，用于比较按键状态，如果采样值小于基准值表明按键按下
 UINT8V	KeyBuf;                                                               //触摸按键状态，为0表示无按键，非0表示当前检测按键被按下
@@ -116,5 +118,7 @@ void TouchKeyChannelQuery()
         KeyBuf=ch;                                                            //可以在此处进行按键动作处理或者置标志通知main进行处理
     }
 }
+#endif
+
 #endif
 

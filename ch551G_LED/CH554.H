@@ -9,6 +9,8 @@ Header file for CH554 microcontrollers.
 
 // 3 blocks: __BASE_TYPE__, __CH554_H__, __USB_DEF__
 
+#if 0
+
 #ifndef __BASE_TYPE__
 #define __BASE_TYPE__
 
@@ -1215,3 +1217,5 @@ typedef UDISK_BOC_CSW xdata *PXUDISK_BOC_CSW;
 #endif
 
 #endif  // __USB_DEF__
+
+#endif

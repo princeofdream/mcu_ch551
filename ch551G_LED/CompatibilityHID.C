@@ -8,11 +8,7 @@
 *******************************************************************************/
 #if 1
 
-#include "./CH554.H"
-#include "./Debug.H"
-#include "./Descriptor.h"
-#include <stdio.h>
-#include <string.h>
+#include "CompatibilityHID.h"
 
 #define Fullspeed               1
 #ifdef  Fullspeed
@@ -23,15 +19,16 @@
 UINT8X  Ep0Buffer[8>(THIS_ENDP0_SIZE+2)?8:(THIS_ENDP0_SIZE+2)] _at_ 0x0000;        //端点0 OUT&IN缓冲区，必须是偶地址
 UINT8X  Ep2Buffer[128>(2*MAX_PACKET_SIZE+4)?128:(2*MAX_PACKET_SIZE+4)] _at_ 0x0044;//端点2 IN&OUT缓冲区,必须是偶地址
 UINT8   SetupReq,SetupLen,Ready,Count,FLAG,UsbConfig;
+UINT8	W_OK;
 PUINT8  pDescr;                                                                    //USB配置标志
 USB_SETUP_REQ   SetupReqBuf;                                                       //暂存Setup包
 #define UsbSetupBuf     ((PUSB_SETUP_REQ)Ep0Buffer)  
 
 sbit Ep2InKey = P1^5;                                                              //K1按键
 #pragma  NOAREGS
+UINT8X get_buf[THIS_ENDP0_SIZE];
 
-
-#define SWAP16(x)  ((((UINT16)(x))<<8)|(((UINT16)(x))>>8))
+//#define SWAP16(x)  ((((UINT16)(x))<<8)|(((UINT16)(x))>>8))
 
 
 /*设备描述符*/
@@ -82,25 +79,26 @@ UINT8C CfgDesc[41] =
 	//端点描述符
 	//{
 #if 1
-		//端点1输入
-		//{
-			0x07,							//描述符字节数大小
-			USB_ENDPOINT_DESCRIPTOR,		//类型编号
-			0x82,
-			0x03,
-			THIS_ENDP0_SIZE,
-			0x00,
-			0x18,
-		//}
 		//端点1输出
 		//{
 			0x07,							//描述符字节数大小
 			USB_ENDPOINT_DESCRIPTOR,		//类型编号
 			0x02,
-			0x03,
+			USB_ENDPOINT_TYPE_INTERRUPT,
 			THIS_ENDP0_SIZE,0x00,
+			0x18,
+		//}
+		//端点1输入
+		//{
+			0x07,							//描述符字节数大小
+			USB_ENDPOINT_DESCRIPTOR,		//类型编号
+			0x82,
+			USB_ENDPOINT_TYPE_INTERRUPT,
+			THIS_ENDP0_SIZE,
+			0x00,
 			0x18
 		//}
+		
 #else
 		//端点1输出
 		//{
@@ -114,8 +112,8 @@ UINT8C CfgDesc[41] =
 		//端点1输入
 		//{
 			0x07,							//描述符字节数大小
-			USB_ENDPOINT_DESCRIPTOR,		//类型编号 0x81
-			POINT_1_IN,						//端点号，主输入端点
+			USB_ENDPOINT_DESCRIPTOR,		//类型编号
+			POINT_1_IN,						//端点号，主输入端点 0x81
 			USB_ENDPOINT_TYPE_INTERRUPT,
 			THIS_ENDP0_SIZE,0x00,
 			0x18
@@ -172,7 +170,6 @@ UINT8C HIDRepDesc[ 47 ] =
 	
 	0xC0
 };
-
 
 char code HidUseReportDescriptor[47] = 
 {
@@ -256,7 +253,7 @@ void USBDeviceInit()
 *******************************************************************************/
 void Enp2BlukIn( )
 {
-	printf( "Enp2BlukIn\n" );
+	//printf( "Enp2BlukIn\n" );
 	memcpy( Ep2Buffer+MAX_PACKET_SIZE, UserEp2Buf, sizeof(UserEp2Buf));        //加载上传数据
 	UEP2_T_LEN = THIS_ENDP0_SIZE;                                              //上传最大包长度
 	UEP2_CTRL = UEP2_CTRL & ~ MASK_UEP_T_RES | UEP_T_RES_ACK;                  //有数据时上传数据并应答ACK
@@ -272,7 +269,7 @@ void    DeviceInterrupt( void ) interrupt INT_NO_USB using 1                    
 	UINT8 len,i;
 	if(UIF_TRANSFER)                                                            //USB传输完成标志
 	{
-		//printf("start UIF_TRANSFER 0x%x\n",USB_INT_ST & (MASK_UIS_TOKEN | MASK_UIS_ENDP));
+		//printf("==> 0x%x\n",USB_INT_ST);
 		switch (USB_INT_ST & (MASK_UIS_TOKEN | MASK_UIS_ENDP))
 		{
 		case UIS_TOKEN_IN | 2:                                                  //endpoint 2# 端点批量上传
@@ -282,7 +279,6 @@ void    DeviceInterrupt( void ) interrupt INT_NO_USB using 1                    
 			UEP2_CTRL = UEP2_CTRL & ~ MASK_UEP_T_RES | UEP_T_RES_NAK;           //默认应答NAK
 			break;
 		case UIS_TOKEN_OUT | 2:                                                 //endpoint 2# 端点批量下传
-			//printf("UIS_TOKEN_OUT");
 			if ( U_TOG_OK )                                                     // 不同步的数据包将丢弃
 			{
 				len = USB_RX_LEN;                                               //接收数据长度，数据从Ep2Buffer首地址开始存放
@@ -292,6 +288,21 @@ void    DeviceInterrupt( void ) interrupt INT_NO_USB using 1                    
 				}
 				UEP2_T_LEN = len;
 				UEP2_CTRL = UEP2_CTRL & ~ MASK_UEP_T_RES | UEP_T_RES_ACK;       // 允许上传
+				memset(get_buf,0x0,sizeof(get_buf));
+				while(1)
+				{
+					if(W_OK)
+						mDelaymS( 100 );
+					else
+					{
+						W_OK = 1;
+						break;
+					}
+				}
+				for ( i = 0; i < len; i ++ )
+				{
+					get_buf[i] = Ep2Buffer[i];
+				}
 			}
 			break;
 		case UIS_TOKEN_SETUP | 0:                                               //SETUP事务
@@ -330,19 +341,13 @@ void    DeviceInterrupt( void ) interrupt INT_NO_USB using 1                    
 				}
 				else                                                             //标准请求
 				{
-					printf("standar request 0x%x. \t",SetupReq);
+					//printf("standar request 0x%x. \t",SetupReq);
 					switch(SetupReq)                                             //请求码
 					{
 					case USB_GET_DESCRIPTOR:
-						printf("USB_GET_STATUS 0x%x, 0x%x\n", UsbSetupBuf->wValueH,UsbSetupBuf->wValueL);
+						//printf("USB_GET_STATUS 0x%x, 0x%x\n", UsbSetupBuf->wValueH,UsbSetupBuf->wValueL);
 						switch( UsbSetupBuf->wValueH )
 						{
-						case 0x22:                                               //报表描述符
-							printf("get HID report!!!\n");
-							pDescr = HIDRepDesc;                                 //数据准备上传
-							len = sizeof(HIDRepDesc);
-							Ready = 1;                                           //如果有更多接口，该标准位应该在最后一个接口配置完成后有效
-							break;
 						case 1:                                          // 设备描述符
 							pDescr = (PUINT8)( &DevDesc[0] );
 							len = sizeof( DevDesc );
@@ -351,6 +356,12 @@ void    DeviceInterrupt( void ) interrupt INT_NO_USB using 1                    
 							pDescr = (PUINT8)( &CfgDesc[0] );
 							len = sizeof( CfgDesc );
 							break;
+						case 0x22:                                               //报表描述符
+							pDescr = HIDRepDesc;                                 //数据准备上传
+							len = sizeof(HIDRepDesc);
+							Ready = 1;                                           //如果有更多接口，该标准位应该在最后一个接口配置完成后有效
+							break;
+
 						case 3:                                          // 字符串描述符
 							switch( UsbSetupBuf->wValueL )
 							{
@@ -376,29 +387,30 @@ void    DeviceInterrupt( void ) interrupt INT_NO_USB using 1                    
 								len = sizeof( device_serial_number );
 								break;
 							default:
-								printf("return unsupport str desc\n");
 								len = 0xFF;                               // 不支持的字符串描述符
 								break;
 							}
 							break;
 						default:
-							printf("return unsupport desc\n");
 							len = 0xFF;                                  // 不支持的描述符类型
 							break;
 						}
 
-						if ( SetupLen > len ) SetupLen = len;            // 限制总长度
+						if ( SetupLen > len )
+						{
+							SetupLen = len;            // 限制总长度
+						}
 						len = SetupLen >= THIS_ENDP0_SIZE ? THIS_ENDP0_SIZE : SetupLen;  // 本次传输长度
 						memcpy( Ep0Buffer, pDescr, len );                 /* 加载上传数据 */
 						SetupLen -= len;
 						pDescr += len;
 						break;
 					case USB_SET_ADDRESS:
-						printf("USB_SET_ADDRESS\n");
+						//printf("USB_SET_ADDRESS\n");
 						SetupLen = UsbSetupBuf->wValueL;                         //暂存USB设备地址
 						break;
 					case USB_GET_CONFIGURATION:
-						printf("USB_GET_CONFIGURATION\n");
+						//printf("USB_GET_CONFIGURATION\n");
 						Ep0Buffer[0] = UsbConfig;
 						if ( SetupLen >= 1 )
 						{
@@ -406,17 +418,17 @@ void    DeviceInterrupt( void ) interrupt INT_NO_USB using 1                    
 						}
 						break;
 					case USB_SET_CONFIGURATION:
-						printf("USB_SET_CONFIGURATION\n");
+						//printf("USB_SET_CONFIGURATION\n");
 						UsbConfig = UsbSetupBuf->wValueL;
 						break;
 					case 0x0A:
-						printf("0x0A");
+						printf("0x0A\n");
 						break;
 					case USB_CLEAR_FEATURE:                                      //Clear Feature
-						printf("USB_CLEAR_FEATURE\n");
+						//printf("USB_CLEAR_FEATURE\n");
 						if ( ( UsbSetupBuf->bRequestType & USB_REQ_RECIP_MASK ) == USB_REQ_RECIP_ENDP )// 端点
 						{
-							printf("UsbSetupBuf->wIndexL %x\n",UsbSetupBuf->wIndexL);
+							//printf("UsbSetupBuf->wIndexL %x\n",UsbSetupBuf->wIndexL);
 							switch( UsbSetupBuf->wIndexL )
 							{
 							case 0x82:
@@ -439,7 +451,6 @@ void    DeviceInterrupt( void ) interrupt INT_NO_USB using 1                    
 						}
 						break;
 					case USB_SET_FEATURE:                                         /* Set Feature */
-						printf("USB_SET_FEATURE");
 						if( ( UsbSetupBuf->bRequestType & 0x1F ) == 0x00 )        /* 设置设备 */
 						{
 							if( ( ( ( UINT16 )UsbSetupBuf->wValueH << 8 ) | UsbSetupBuf->wValueL ) == 0x01 )
@@ -465,31 +476,30 @@ void    DeviceInterrupt( void ) interrupt INT_NO_USB using 1                    
 								switch( ( ( UINT16 )UsbSetupBuf->wIndexH << 8 ) | UsbSetupBuf->wIndexL )
 								{
 								case 0x82:
-									UEP2_CTRL = UEP2_CTRL & (~bUEP_T_TOG) | UEP_T_RES_STALL;/* 设置端点2 IN STALL */
+									UEP2_CTRL = UEP2_CTRL & (~bUEP_T_TOG) | UEP_T_RES_STALL;	//设置端点2 IN STALL
 									break;
 								case 0x02:
-									UEP2_CTRL = UEP2_CTRL & (~bUEP_R_TOG) | UEP_R_RES_STALL;/* 设置端点2 OUT Stall */
+									UEP2_CTRL = UEP2_CTRL & (~bUEP_R_TOG) | UEP_R_RES_STALL;	//设置端点2 OUT Stall
 									break;
 								case 0x81:
-									UEP1_CTRL = UEP1_CTRL & (~bUEP_T_TOG) | UEP_T_RES_STALL;/* 设置端点1 IN STALL */
+									UEP1_CTRL = UEP1_CTRL & (~bUEP_T_TOG) | UEP_T_RES_STALL;	//设置端点1 IN STALL
 									break;
 								default:
-									len = 0xFF;                                     /* 操作失败 */
+									len = 0xFF;                                     // 操作失败
 									break;
 								}
 							}
 							else
 							{
-								len = 0xFF;                                         /* 操作失败 */
+								len = 0xFF;                                         // 操作失败
 							}
 						}
 						else
 						{
-							len = 0xFF;                                             /* 操作失败 */
+							len = 0xFF;                                             // 操作失败
 						}
 						break;
 					case USB_GET_STATUS:
-						printf("USB_GET_STATUS");
 						Ep0Buffer[0] = 0x00;
 						Ep0Buffer[1] = 0x00;
 						if ( SetupLen >= 2 )
@@ -502,7 +512,6 @@ void    DeviceInterrupt( void ) interrupt INT_NO_USB using 1                    
 						}
 						break;
 					default:
-						//printf("SetupReq Fail");
 						len = 0xff;                                                  //操作失败
 						break;
 					}
@@ -589,6 +598,7 @@ void    DeviceInterrupt( void ) interrupt INT_NO_USB using 1                    
 #ifdef DE_PRINTF
 			printf( "zz\n" );                                                          //睡眠状态
 #endif
+			//by JamesL
 			Ready = 0;
 			while ( XBUS_AUX & bUART0_TX )
 			{
@@ -610,7 +620,7 @@ void    DeviceInterrupt( void ) interrupt INT_NO_USB using 1                    
 }
 
 
-main()
+void hid_main()
 {
 	UINT8 i;
 	CfgFsys( );                                                           //CH559时钟选择配置
@@ -635,9 +645,11 @@ main()
 	UEP2_T_LEN = 0;                                                       //预使用发送长度一定要清空
 	FLAG = 0;
 	Ready = 0;
+	W_OK=0;
+	
 	while(1)
 	{
-		#if 1
+		#if 0
 		if(Ready && (Ep2InKey==0))
 		#else
 		if(Ready)
@@ -647,6 +659,19 @@ main()
 			Enp2BlukIn( );
 			mDelaymS( 100 );
 			//Ready = 0;
+		}
+		if(W_OK)
+		{
+			for ( i = 0; i < sizeof(get_buf); i ++ )
+			{
+				printf("%04x ",get_buf[i]);
+				if(i%16==7)
+					printf("\t");
+				else if(i%16==15)
+					printf("\n");
+			}
+
+			W_OK=0;
 		}
 
 		mDelaymS( 100 );                                                   //模拟单片机做其它事

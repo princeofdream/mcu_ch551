@@ -6,39 +6,41 @@
 * Date               : 2017/01/20
 * Description        : CH554 触摸按键中断和查询方式进行采集并报告当前采样通道按键状态，包含初始化和按键采样等演示函数
 *******************************************************************************/
-#include "CH554.H"
+#include "CH552.H"
 #include "Debug.H"
 #include "TouchKey.H"
 #include <stdio.h>
+#include "CompatibilityHID.h"
 
 #pragma  NOAREGS
 
 #define	LED_PIN 5
 sbit	LED=P1^5;
+sbit	LED_B=P3^3;
 sbit	IR_PIN=P3^4;
 sbit	LED_G=P3^0;
-#if 1
-int led_main( )
-#else
-main()
-#endif
-{
 
+int led_main()
+{
+	int i;
 
     CfgFsys( );                                                                //CH554时钟选择配置
     mDelaymS(5);
-    //P1_DIR_PU &= 0x0C;
-    //P1_MOD_OC = P1_MOD_OC & ~(1<<LED_PIN);
-    //P1_DIR_PU = P1_DIR_PU |	(1<<LED_PIN);
-  //  TouchKeyQueryCyl2ms();                                                     //TouchKey查询周期2ms
-  //  GetTouckKeyFreeBuf();                                                      //获取采样基准值
-
 	mInitSTDIO();
-    //UART1Setup();
-    //EA = 1;
-
 
 	P3_DIR_PU=0xFF;
+	
+	i=6;
+			printf("%x\n ",i >> 0);
+			printf("%x\n ",i >> 1);
+			printf("%x\n ",i >> 2);
+			printf("%x\n ",i >> 3);
+			printf("%x\n ",i >> 4);
+			printf("%x\n ",i >> 5);
+			printf("%x\n ",i >> 6);
+			printf("%x\n ",i >> 7);
+			printf("%x\n ",i >> 8);
+	
     while(1)
     {
         mDelaymS(500);
@@ -48,6 +50,7 @@ main()
 		//P1=0;
 		IR_PIN = ! IR_PIN;
 		LED_G = ! LED_G;
+		LED_B = ! LED_B;
 	 
 		CH554UART0SendByte('R');
 		CH554UART0SendByte('S');
@@ -57,3 +60,13 @@ main()
     }
 
 }
+
+main()
+{
+	//led_main();
+	hid_main();
+	//composite_main();
+	return 0;
+}
+
+
