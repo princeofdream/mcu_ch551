@@ -4,7 +4,7 @@
 * Author             : WCH
 * Version            : V1.0
 * Date               : 2017/01/20
-* Description        : CH554 ���������жϺͲ�ѯ��ʽ���вɼ������浱ǰ����ͨ������״̬��������ʼ���Ͱ�����������ʾ����
+* Description        : CH554 触摸按键中断和查询方式进行采集并报告当前采样通道按键状态，包含初始化和按键采样等演示函数
 *******************************************************************************/
 #include "CH552.H"
 #include "Debug.H"
@@ -24,7 +24,7 @@ int led_main()
 {
 	int i;
 
-    CfgFsys( );                                                                //CH554ʱ��ѡ������
+    CfgFsys( );                                                                //CH554时钟选择配置
     mDelaymS(5);
 	mInitSTDIO();
 

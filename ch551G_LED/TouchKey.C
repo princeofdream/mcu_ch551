@@ -4,7 +4,7 @@
 * Author             : WCH
 * Version            : V1.0
 * Date               : 2017/01/20
-* Description        : CH554 ´¥Ãþ°´¼ü²ÉÑù¼ä¸ôÉèÖÃ¡¢Í¨µÀÑ¡ÔñºÍÇÐ»»ºÍÖÐ¶Ï´¦Àíº¯Êý   
+* Description        : CH554 è§¦æ‘¸æŒ‰é”®é‡‡æ ·é—´éš”è®¾ç½®ã€é€šé“é€‰æ‹©å’Œåˆ‡æ¢å’Œä¸­æ–­å¤„ç†å‡½æ•°   
 *******************************************************************************/
 
 #include "CH552.H"                                                       
@@ -16,12 +16,12 @@
 
 #if 0
 
-UINT16	KeyFree[KEY_LAST-KEY_FIRST+1];                                        //´¥Ãþ¿ÕÏÐÖµ´æ´¢£¬ÓÃÓÚ±È½Ï°´¼ü×´Ì¬£¬Èç¹û²ÉÑùÖµÐ¡ÓÚ»ù×¼Öµ±íÃ÷°´¼ü°´ÏÂ
-UINT8V	KeyBuf;                                                               //´¥Ãþ°´¼ü×´Ì¬£¬Îª0±íÊ¾ÎÞ°´¼ü£¬·Ç0±íÊ¾µ±Ç°¼ì²â°´¼ü±»°´ÏÂ
+UINT16	KeyFree[KEY_LAST-KEY_FIRST+1];                                        //è§¦æ‘¸ç©ºé—²å€¼å­˜å‚¨ï¼Œç”¨äºŽæ¯”è¾ƒæŒ‰é”®çŠ¶æ€ï¼Œå¦‚æžœé‡‡æ ·å€¼å°äºŽåŸºå‡†å€¼è¡¨æ˜ŽæŒ‰é”®æŒ‰ä¸‹
+UINT8V	KeyBuf;                                                               //è§¦æ‘¸æŒ‰é”®çŠ¶æ€ï¼Œä¸º0è¡¨ç¤ºæ— æŒ‰é”®ï¼Œéž0è¡¨ç¤ºå½“å‰æ£€æµ‹æŒ‰é”®è¢«æŒ‰ä¸‹
 
 /*******************************************************************************
 * Function Name  : GetTouckKeyFreeBuf()
-* Description    : »ñÈ¡´¥Ãþ°´¼ü¿Õ¼ä×´Ì¬¼üÖµ
+* Description    : èŽ·å–è§¦æ‘¸æŒ‰é”®ç©ºé—´çŠ¶æ€é”®å€¼
 * Input          : None								 
 * Output         : None
 * Return         : None
@@ -30,31 +30,31 @@ void GetTouckKeyFreeBuf()
 {
   UINT8 i,j;
   UINT8 TmpSum = 0;
-  KeyBuf = 0;                                                                 //³õÊ¼»¯ÉèÖÃÎªÎÞ°´¼ü×´Ì¬
+  KeyBuf = 0;                                                                 //åˆå§‹åŒ–è®¾ç½®ä¸ºæ— æŒ‰é”®çŠ¶æ€
   for(i=KEY_FIRST;i<(KEY_LAST+1);i++)
   {
-		j = KEY_BASE_SAMPLE_TIME;                                                 //²É¶à´ÎÇóÆ½¾ùÖµ×÷Îª²ÉÑù²Î¿¼
-	  TKEY_CTRL = (TKEY_CTRL & 0xF8 | i)+1;                                     //ÉèÖÃ²ÉÑùÍ¨µÀ
+		j = KEY_BASE_SAMPLE_TIME;                                                 //é‡‡å¤šæ¬¡æ±‚å¹³å‡å€¼ä½œä¸ºé‡‡æ ·å‚è€ƒ
+	  TKEY_CTRL = (TKEY_CTRL & 0xF8 | i)+1;                                     //è®¾ç½®é‡‡æ ·é€šé“
     while(j--)
     {
-        while((TKEY_CTRL&bTKC_IF) == 0);                                      //bTKC_IF±äÎª1Ê±£¬±¾ÖÜÆÚ²ÉÑùÍê³É
-        TmpSum += TKEY_DAT&0x0F;                                              //²ÉÑùÖµÎÈ¶¨£¬È¡µÍ4Î»¾Í¹»ÁË
+        while((TKEY_CTRL&bTKC_IF) == 0);                                      //bTKC_IFå˜ä¸º1æ—¶ï¼Œæœ¬å‘¨æœŸé‡‡æ ·å®Œæˆ
+        TmpSum += TKEY_DAT&0x0F;                                              //é‡‡æ ·å€¼ç¨³å®šï¼Œå–ä½Ž4ä½å°±å¤Ÿäº†
     }		
-    KeyFree[i] = TKEY_DAT&0x07F0 + TmpSum/5;                                  //±£´æ²ÉÑùÖµ 
+    KeyFree[i] = TKEY_DAT&0x07F0 + TmpSum/5;                                  //ä¿å­˜é‡‡æ ·å€¼ 
   }
 #if INTERRUPT_TouchKey
-    IE_TKEY = 1;                                                              //Ê¹ÄÜTouch_KeyÖÐ¶Ï
+    IE_TKEY = 1;                                                              //ä½¿èƒ½Touch_Keyä¸­æ–­
 #endif   
 }
 
 /*******************************************************************************
 * Function Name  : TouchKeyChannelSelect(UINT8 ch)
-* Description    : ´¥Ãþ°´¼üÍ¨µÀÑ¡Ôñ
-* Input          : UINT8 ch ²ÉÓÃÍ¨µÀ
-                   0~5 ·Ö±ð´ú±í²ÉÑùÍ¨µÀ
+* Description    : è§¦æ‘¸æŒ‰é”®é€šé“é€‰æ‹©
+* Input          : UINT8 ch é‡‡ç”¨é€šé“
+                   0~5 åˆ†åˆ«ä»£è¡¨é‡‡æ ·é€šé“
 * Output         : None
-* Return         : ³É¹¦ SUCCESS
-                   Ê§°Ü FAIL  ²»Ö§³ÖµÄÍ¨µÀ
+* Return         : æˆåŠŸ SUCCESS
+                   å¤±è´¥ FAIL  ä¸æ”¯æŒçš„é€šé“
 *******************************************************************************/
 UINT8 TouchKeyChannelSelect(UINT8 ch)
 {
@@ -69,31 +69,31 @@ UINT8 TouchKeyChannelSelect(UINT8 ch)
 #if INTERRUPT_TouchKey
 /*******************************************************************************
 * Function Name  : TouchKeyInterrupt(void)
-* Description    : Touch_Key ÖÐ¶Ï·þÎñ³ÌÐò
+* Description    : Touch_Key ä¸­æ–­æœåŠ¡ç¨‹åº
 *******************************************************************************/
-void	TouchKeyInterrupt( void ) interrupt INT_NO_TKEY using 1                //Touch_KeyÖÐ¶Ï·þÎñ³ÌÐò,Ê¹ÓÃ¼Ä´æÆ÷×é1
+void	TouchKeyInterrupt( void ) interrupt INT_NO_TKEY using 1                //Touch_Keyä¸­æ–­æœåŠ¡ç¨‹åº,ä½¿ç”¨å¯„å­˜å™¨ç»„1
 { 
 	  UINT8	ch;
     UINT16 KeyData;
 
-    KeyData = TKEY_DAT;                                                       //±£³Ö87us,¾¡¿ìÈ¡×ß
-    ch = TKEY_CTRL&7;                                                         //»ñÈ¡µ±Ç°²ÉÑùÍ¨µÀ
+    KeyData = TKEY_DAT;                                                       //ä¿æŒ87us,å°½å¿«å–èµ°
+    ch = TKEY_CTRL&7;                                                         //èŽ·å–å½“å‰é‡‡æ ·é€šé“
     if ( ch > KEY_LAST ){
-       TKEY_CTRL = TKEY_CTRL & 0xF8 | KEY_FIRST;                              //´ÓÊ×Í¨µÀ¿ªÊ¼²ÉÑù
+       TKEY_CTRL = TKEY_CTRL & 0xF8 | KEY_FIRST;                              //ä»Žé¦–é€šé“å¼€å§‹é‡‡æ ·
     }			
     else
     {
-       TKEY_CTRL ++;                                                          //ÇÐ»»ÖÁÏÂÒ»¸ö²ÉÑùÍ¨µÀ
+       TKEY_CTRL ++;                                                          //åˆ‡æ¢è‡³ä¸‹ä¸€ä¸ªé‡‡æ ·é€šé“
     }
-    if ( KeyData < (KeyFree[ch-KEY_FIRST] - KEY_ACT) )                        //ÈçÌõ¼þÂú×ã£¬´ú±í°´¼ü°´ÏÂ   
+    if ( KeyData < (KeyFree[ch-KEY_FIRST] - KEY_ACT) )                        //å¦‚æ¡ä»¶æ»¡è¶³ï¼Œä»£è¡¨æŒ‰é”®æŒ‰ä¸‹   
     {
-        KeyBuf=ch;                                                            //¿ÉÒÔÔÚ´Ë´¦½øÐÐ°´¼ü¶¯×÷´¦Àí»òÕßÖÃ±êÖ¾Í¨Öªmain½øÐÐ´¦Àí
+        KeyBuf=ch;                                                            //å¯ä»¥åœ¨æ­¤å¤„è¿›è¡ŒæŒ‰é”®åŠ¨ä½œå¤„ç†æˆ–è€…ç½®æ ‡å¿—é€šçŸ¥mainè¿›è¡Œå¤„ç†
     }
 }
 #else
 /*******************************************************************************
 * Function Name  : TouchKeyChannelQuery()
-* Description    : ´¥Ãþ°´¼üÍ¨µÀ×´Ì¬²éÑ¯
+* Description    : è§¦æ‘¸æŒ‰é”®é€šé“çŠ¶æ€æŸ¥è¯¢
 * Input          : None
 * Output         : None
 * Return         : None
@@ -103,19 +103,19 @@ void TouchKeyChannelQuery()
 	  UINT8	ch;
     UINT16 KeyData;
 
-    while((TKEY_CTRL&bTKC_IF) == 0);                                          //bTKC_IF±äÎª1Ê±£¬±¾ÖÜÆÚ²ÉÑùÍê³É
-    KeyData = TKEY_DAT;                                                       //±£³Ö87us,¾¡¿ìÈ¡×ß
-    ch = TKEY_CTRL&7;                                                         //»ñÈ¡µ±Ç°²ÉÑùÍ¨µÀ
+    while((TKEY_CTRL&bTKC_IF) == 0);                                          //bTKC_IFå˜ä¸º1æ—¶ï¼Œæœ¬å‘¨æœŸé‡‡æ ·å®Œæˆ
+    KeyData = TKEY_DAT;                                                       //ä¿æŒ87us,å°½å¿«å–èµ°
+    ch = TKEY_CTRL&7;                                                         //èŽ·å–å½“å‰é‡‡æ ·é€šé“
     if ( ch > KEY_LAST ){
-       TKEY_CTRL = TKEY_CTRL & 0xF8 | KEY_FIRST;                              //´ÓÊ×Í¨µÀ¿ªÊ¼²ÉÑù
+       TKEY_CTRL = TKEY_CTRL & 0xF8 | KEY_FIRST;                              //ä»Žé¦–é€šé“å¼€å§‹é‡‡æ ·
     }			
     else
     {
-       TKEY_CTRL ++;                                                          //ÇÐ»»ÖÁÏÂÒ»¸ö²ÉÑùÍ¨µÀ
+       TKEY_CTRL ++;                                                          //åˆ‡æ¢è‡³ä¸‹ä¸€ä¸ªé‡‡æ ·é€šé“
     }
-    if ( KeyData < (KeyFree[ch-KEY_FIRST] - KEY_ACT) )                        //ÈçÌõ¼þÂú×ã£¬´ú±í°´¼ü°´ÏÂ   
+    if ( KeyData < (KeyFree[ch-KEY_FIRST] - KEY_ACT) )                        //å¦‚æ¡ä»¶æ»¡è¶³ï¼Œä»£è¡¨æŒ‰é”®æŒ‰ä¸‹   
     {
-        KeyBuf=ch;                                                            //¿ÉÒÔÔÚ´Ë´¦½øÐÐ°´¼ü¶¯×÷´¦Àí»òÕßÖÃ±êÖ¾Í¨Öªmain½øÐÐ´¦Àí
+        KeyBuf=ch;                                                            //å¯ä»¥åœ¨æ­¤å¤„è¿›è¡ŒæŒ‰é”®åŠ¨ä½œå¤„ç†æˆ–è€…ç½®æ ‡å¿—é€šçŸ¥mainè¿›è¡Œå¤„ç†
     }
 }
 #endif
