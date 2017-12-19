@@ -4,7 +4,7 @@
 * Author             : WCH
 * Version            : V1.0
 * Date               : 2017/01/20
-* Description        : ÉÏµçÔËĞĞºóP17LEDµÆÉÁË¸£¬µ±¼ì²â¡°EnableIAP¡±½ÅÎªµÍµçÆ½ºó£¬½«´ÓÓÃ»§³ÌĞòÌø×ªÖÁBOOT£¬Í¨¹ıBOOTÉı¼¶ÓÃ»§³ÌĞò 
+* Description        : ä¸Šç”µè¿è¡ŒåP17LEDç¯é—ªçƒï¼Œå½“æ£€æµ‹â€œEnableIAPâ€è„šä¸ºä½ç”µå¹³åï¼Œå°†ä»ç”¨æˆ·ç¨‹åºè·³è½¬è‡³BOOTï¼Œé€šè¿‡BOOTå‡çº§ç”¨æˆ·ç¨‹åº 
 *******************************************************************************/
 #include "./Public/CH554.H"                                                    
 #include "./Public/Debug.H"
@@ -16,8 +16,8 @@ sbit EnableIAP  = P1^6;
 
 /*******************************************************************************
 * Function Name  : main
-* Description    : Ö÷º¯Êı
-*                £º
+* Description    : ä¸»å‡½æ•°
+*                ï¼š
 * Input          : None
 * Output         : None
 * Return         : None
@@ -30,15 +30,15 @@ void main( void )
 {
 	UINT16 i=0;
     while(1){
-    SCK = ~SCK;                                                              //P17ÉÁË¸
+    SCK = ~SCK;                                                              //P17é—ªçƒ
     mDelaymS(50);
-    if(EnableIAP == 0){                                                      //P16Òı½Å¼ì²âµ½µÍµçÆ½Ìø×ª
+    if(EnableIAP == 0){                                                      //P16å¼•è„šæ£€æµ‹åˆ°ä½ç”µå¹³è·³è½¬
       break;
     }
   }
-  EA = 0;                                                                    //¹Ø±Õ×ÜÖĞ¶Ï£¬±Ø¼Ó
+  EA = 0;                                                                    //å…³é—­æ€»ä¸­æ–­ï¼Œå¿…åŠ 
 	tasksArr[0] = BOOT_ADDR;
   mDelaymS( 100 ); 				
-  (tasksArr[0])( );                                                          //ÌøÖÁBOOTÉı¼¶³ÌĞò,Ê¹ÓÃISP¹¤¾ßÉı¼¶	
+  (tasksArr[0])( );                                                          //è·³è‡³BOOTå‡çº§ç¨‹åº,ä½¿ç”¨ISPå·¥å…·å‡çº§	
   while(1); 
 }

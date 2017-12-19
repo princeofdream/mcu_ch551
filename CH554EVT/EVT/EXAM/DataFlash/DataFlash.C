@@ -4,7 +4,7 @@
 * Author             : WCH
 * Version            : V1.0
 * Date               : 2017/01/20
-* Description        : CH554 DataFlash×Ö½Ú¶ÁĞ´º¯Êı¶¨Òå   
+* Description        : CH554 DataFlashå­—èŠ‚è¯»å†™å‡½æ•°å®šä¹‰   
 *******************************************************************************/
 
 #include "..\Public\CH554.H"                                                         
@@ -13,42 +13,42 @@
 
 /*******************************************************************************
 * Function Name  : WriteDataFlash(UINT8 Addr,PUINT8 buf,UINT8 len)
-* Description    : DataFlashĞ´
-* Input          : UINT8 Addr£¬PUINT16 buf,UINT8 len
+* Description    : DataFlashå†™
+* Input          : UINT8 Addrï¼ŒPUINT16 buf,UINT8 len
 * Output         : None
-* Return         : UINT8 i ·µ»ØĞ´Èë³¤¶È
+* Return         : UINT8 i è¿”å›å†™å…¥é•¿åº¦
 *******************************************************************************/
 UINT8 WriteDataFlash(UINT8 Addr,PUINT8 buf,UINT8 len)
 {
     UINT8 i;
     SAFE_MOD = 0x55;
-    SAFE_MOD = 0xAA;                                                           //½øÈë°²È«Ä£Ê½
-    GLOBAL_CFG |= bDATA_WE;                                                    //Ê¹ÄÜDataFlashĞ´
-    SAFE_MOD = 0;                                                              //ÍË³ö°²È«Ä£Ê½	
+    SAFE_MOD = 0xAA;                                                           //è¿›å…¥å®‰å…¨æ¨¡å¼
+    GLOBAL_CFG |= bDATA_WE;                                                    //ä½¿èƒ½DataFlashå†™
+    SAFE_MOD = 0;                                                              //é€€å‡ºå®‰å…¨æ¨¡å¼	
 		ROM_ADDR_H = DATA_FLASH_ADDR >> 8;
     Addr <<= 1;
     for(i=0;i<len;i++)
 	  {
         ROM_ADDR_L = Addr + i*2;
         ROM_DATA_L = *(buf+i);			
-        if ( ROM_STATUS & bROM_ADDR_OK ) {                                     // ²Ù×÷µØÖ·ÓĞĞ§
-           ROM_CTRL = ROM_CMD_WRITE;                                           // Ğ´Èë
+        if ( ROM_STATUS & bROM_ADDR_OK ) {                                     // æ“ä½œåœ°å€æœ‰æ•ˆ
+           ROM_CTRL = ROM_CMD_WRITE;                                           // å†™å…¥
         }
-        if((ROM_STATUS ^ bROM_ADDR_OK) > 0) return i;                          // ·µ»Ø×´Ì¬,0x00=success,  0x02=unknown command(bROM_CMD_ERR)
+        if((ROM_STATUS ^ bROM_ADDR_OK) > 0) return i;                          // è¿”å›çŠ¶æ€,0x00=success,  0x02=unknown command(bROM_CMD_ERR)
 	  }
     SAFE_MOD = 0x55;
-    SAFE_MOD = 0xAA;                                                           //½øÈë°²È«Ä£Ê½
-    GLOBAL_CFG &= ~bDATA_WE;                                                   //¿ªÆôDataFlashĞ´±£»¤
-    SAFE_MOD = 0;                                                              //ÍË³ö°²È«Ä£Ê½	
+    SAFE_MOD = 0xAA;                                                           //è¿›å…¥å®‰å…¨æ¨¡å¼
+    GLOBAL_CFG &= ~bDATA_WE;                                                   //å¼€å¯DataFlashå†™ä¿æŠ¤
+    SAFE_MOD = 0;                                                              //é€€å‡ºå®‰å…¨æ¨¡å¼	
     return i;		
 }
 
 /*******************************************************************************
 * Function Name  : ReadDataFlash(UINT8 Addr,UINT8 len,PUINT8 buf)
-* Description    : ¶ÁDataFlash
+* Description    : è¯»DataFlash
 * Input          : UINT8 Addr UINT8 len PUINT8 buf
 * Output         : None
-* Return         : UINT8 i ·µ»ØĞ´Èë³¤¶È
+* Return         : UINT8 i è¿”å›å†™å…¥é•¿åº¦
 *******************************************************************************/
 UINT8 ReadDataFlash(UINT8 Addr,UINT8 len,PUINT8 buf)
 {
@@ -56,7 +56,7 @@ UINT8 ReadDataFlash(UINT8 Addr,UINT8 len,PUINT8 buf)
     ROM_ADDR_H = DATA_FLASH_ADDR >> 8;
     Addr <<= 1;
     for(i=0;i<len;i++){
-	  ROM_ADDR_L = Addr + i*2;                                                   //Addr±ØĞëÎªÅ¼µØÖ·
+	  ROM_ADDR_L = Addr + i*2;                                                   //Addrå¿…é¡»ä¸ºå¶åœ°å€
 	  ROM_CTRL = ROM_CMD_READ;
 //     if ( ROM_STATUS & bROM_CMD_ERR ) return( 0xFF );                        // unknown command
 	  *(buf+i) = ROM_DATA_L;

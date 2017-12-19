@@ -1,6 +1,6 @@
 
 
-// #define  T0_INT   1                                                        //TÖĞ¶Ï¿ªÆô
+// #define  T0_INT   1                                                        //Tä¸­æ–­å¼€å¯
 #define  T1_INT   1
 // #define  T2_INT   1
 // #define  T2_CAP   1
@@ -8,58 +8,58 @@
 extern UINT8 FLAG; 
 extern UINT16 Cap[8];
 
-//CH554 Timer0Ê±ÖÓÑ¡Ôñ   
-//bTMR_CLKÍ¬Ê±Ó°ÏìTimer0&1&2,Ê¹ÓÃÊ±Òª×¢Òâ (³ı¶¨Ê±Ê¹ÓÃ±ê×¼Ê±ÖÓ)            
-#define mTimer0Clk12DivFsys( ) (T2MOD &= ~bT0_CLK)                          //¶¨Ê±Æ÷,Ê±ÖÓ=Fsys/12 T0±ê×¼Ê±ÖÓ
-#define mTimer0ClkFsys( )      (T2MOD |= bTMR_CLK | bT0_CLK)                //¶¨Ê±Æ÷,Ê±ÖÓ=Fsys
-#define mTimer0Clk4DivFsys( )  (T2MOD &= ~bTMR_CLK;T2MOD |=  bT0_CLK)       //¶¨Ê±Æ÷,Ê±ÖÓ=Fsys/4
-#define mTimer0CountClk( )     (TMOD |= bT0_CT)                             //¼ÆÊıÆ÷,T0Òı½ÅµÄÏÂ½µÑØÓĞĞ§
+//CH554 Timer0æ—¶é’Ÿé€‰æ‹©   
+//bTMR_CLKåŒæ—¶å½±å“Timer0&1&2,ä½¿ç”¨æ—¶è¦æ³¨æ„ (é™¤å®šæ—¶ä½¿ç”¨æ ‡å‡†æ—¶é’Ÿ)            
+#define mTimer0Clk12DivFsys( ) (T2MOD &= ~bT0_CLK)                          //å®šæ—¶å™¨,æ—¶é’Ÿ=Fsys/12 T0æ ‡å‡†æ—¶é’Ÿ
+#define mTimer0ClkFsys( )      (T2MOD |= bTMR_CLK | bT0_CLK)                //å®šæ—¶å™¨,æ—¶é’Ÿ=Fsys
+#define mTimer0Clk4DivFsys( )  (T2MOD &= ~bTMR_CLK;T2MOD |=  bT0_CLK)       //å®šæ—¶å™¨,æ—¶é’Ÿ=Fsys/4
+#define mTimer0CountClk( )     (TMOD |= bT0_CT)                             //è®¡æ•°å™¨,T0å¼•è„šçš„ä¸‹é™æ²¿æœ‰æ•ˆ
 
-//CH554 Timer0 ¿ªÊ¼(SS=1)/½áÊø(SS=0)
+//CH554 Timer0 å¼€å§‹(SS=1)/ç»“æŸ(SS=0)
 #define mTimer0RunCTL( SS )    (TR0 = SS ? START : STOP)
 
 
-#define mTimer1Clk12DivFsys( ) (T2MOD &= ~bT1_CLK)                          //¶¨Ê±Æ÷,Ê±ÖÓ=Fsys/12  T1±ê×¼Ê±ÖÓ
-#define mTimer1ClkFsys( )      (T2MOD |= bTMR_CLK | bT1_CLK)                //¶¨Ê±Æ÷,Ê±ÖÓ=Fsys
-#define mTimer1Clk4DivFsys( )  (T2MOD &= ~bTMR_CLK;T2MOD |=  bT1_CLK)       //¶¨Ê±Æ÷,Ê±ÖÓ=Fsys/4
-#define mTimer1CountClk( )     (TMOD |= bT1_CT)                             //¼ÆÊıÆ÷,T0Òı½ÅµÄÏÂ½µÑØÓĞĞ§
+#define mTimer1Clk12DivFsys( ) (T2MOD &= ~bT1_CLK)                          //å®šæ—¶å™¨,æ—¶é’Ÿ=Fsys/12  T1æ ‡å‡†æ—¶é’Ÿ
+#define mTimer1ClkFsys( )      (T2MOD |= bTMR_CLK | bT1_CLK)                //å®šæ—¶å™¨,æ—¶é’Ÿ=Fsys
+#define mTimer1Clk4DivFsys( )  (T2MOD &= ~bTMR_CLK;T2MOD |=  bT1_CLK)       //å®šæ—¶å™¨,æ—¶é’Ÿ=Fsys/4
+#define mTimer1CountClk( )     (TMOD |= bT1_CT)                             //è®¡æ•°å™¨,T0å¼•è„šçš„ä¸‹é™æ²¿æœ‰æ•ˆ
 
-//CH554 Timer1 ¿ªÊ¼(SS=1)/½áÊø(SS=0)
+//CH554 Timer1 å¼€å§‹(SS=1)/ç»“æŸ(SS=0)
 #define mTimer1RunCTL( SS )    (TR1 = SS ? START : STOP)
 
 
-#define mTimer2Clk12DivFsys( ) {T2MOD &= ~(bTMR_CLK | bT2_CLK);C_T2 = 0;}      //¶¨Ê±Æ÷,Ê±ÖÓ=Fsys/12 T2±ê×¼Ê±ÖÓ
-#define mTimer2ClkFsys( )      {T2MOD |= (bTMR_CLK | bT2_CLK);C_T2=0;}         //¶¨Ê±Æ÷,Ê±ÖÓ=Fsys
-#define mTimer2Clk4DivFsys( )  {T2MOD &= ~bTMR_CLK;T2MOD |=  bT2_CLK;C_T2 = 0;}//¶¨Ê±Æ÷,Ê±ÖÓ=Fsys/4
-#define mTimer2CountClk( )     {C_T2 = 1;}                                     //¼ÆÊıÆ÷,T2Òı½ÅµÄÏÂ½µÑØÓĞĞ§
+#define mTimer2Clk12DivFsys( ) {T2MOD &= ~(bTMR_CLK | bT2_CLK);C_T2 = 0;}      //å®šæ—¶å™¨,æ—¶é’Ÿ=Fsys/12 T2æ ‡å‡†æ—¶é’Ÿ
+#define mTimer2ClkFsys( )      {T2MOD |= (bTMR_CLK | bT2_CLK);C_T2=0;}         //å®šæ—¶å™¨,æ—¶é’Ÿ=Fsys
+#define mTimer2Clk4DivFsys( )  {T2MOD &= ~bTMR_CLK;T2MOD |=  bT2_CLK;C_T2 = 0;}//å®šæ—¶å™¨,æ—¶é’Ÿ=Fsys/4
+#define mTimer2CountClk( )     {C_T2 = 1;}                                     //è®¡æ•°å™¨,T2å¼•è„šçš„ä¸‹é™æ²¿æœ‰æ•ˆ
 
-//CH554 Timer2 ¿ªÊ¼(SS=1)/½áÊø(SS=0)
+//CH554 Timer2 å¼€å§‹(SS=1)/ç»“æŸ(SS=0)
 #define mTimer2RunCTL( SS )    {TR2 = SS ? START : STOP;}
-#define mTimer2OutCTL( )       (T2MOD |= T2OE)                               //T2Êä³ö  ÆµÂÊTF2/2   
-#define CAP1Alter( )           (PIN_FUNC |= bT2_PIN_X;)                      //CAP1ÓÉP10 Ó³Éäµ½P14
-#define CAP2Alter( )           (PIN_FUNC |= bT2EX_PIN_X;)                    //CAP2ÓÉP11 Ó³ÉäRST
+#define mTimer2OutCTL( )       (T2MOD |= T2OE)                               //T2è¾“å‡º  é¢‘ç‡TF2/2   
+#define CAP1Alter( )           (PIN_FUNC |= bT2_PIN_X;)                      //CAP1ç”±P10 æ˜ å°„åˆ°P14
+#define CAP2Alter( )           (PIN_FUNC |= bT2EX_PIN_X;)                    //CAP2ç”±P11 æ˜ å°„RST
 
 /*******************************************************************************
 * Function Name  : mTimer_x_ModInit(UINT8 x ,UINT8 mode)
-* Description    : CH554¶¨Ê±¼ÆÊıÆ÷xÄ£Ê½ÉèÖÃ
-* Input          : UINT8 mode,TimerÄ£Ê½Ñ¡Ôñ
-                   0£ºÄ£Ê½0£¬13Î»¶¨Ê±Æ÷£¬TLnµÄ¸ß3Î»ÎŞĞ§
-                   1£ºÄ£Ê½1£¬16Î»¶¨Ê±Æ÷
-                   2£ºÄ£Ê½2£¬8Î»×Ô¶¯ÖØ×°¶¨Ê±Æ÷
-                   3£ºÄ£Ê½3£¬Á½¸ö8Î»¶¨Ê±Æ÷  Timer0
-                   3£ºÄ£Ê½3£¬Timer1Í£Ö¹		
-                   UINT8 x ¶¨Ê±Æ÷  0 1 2
+* Description    : CH554å®šæ—¶è®¡æ•°å™¨xæ¨¡å¼è®¾ç½®
+* Input          : UINT8 mode,Timeræ¨¡å¼é€‰æ‹©
+                   0ï¼šæ¨¡å¼0ï¼Œ13ä½å®šæ—¶å™¨ï¼ŒTLnçš„é«˜3ä½æ— æ•ˆ
+                   1ï¼šæ¨¡å¼1ï¼Œ16ä½å®šæ—¶å™¨
+                   2ï¼šæ¨¡å¼2ï¼Œ8ä½è‡ªåŠ¨é‡è£…å®šæ—¶å™¨
+                   3ï¼šæ¨¡å¼3ï¼Œä¸¤ä¸ª8ä½å®šæ—¶å™¨  Timer0
+                   3ï¼šæ¨¡å¼3ï¼ŒTimer1åœæ­¢		
+                   UINT8 x å®šæ—¶å™¨  0 1 2
 * Output         : None
-* Return         : ³É¹¦  SUCCESS
-                   Ê§°Ü  FAIL
+* Return         : æˆåŠŸ  SUCCESS
+                   å¤±è´¥  FAIL
 *******************************************************************************/
 UINT8 mTimer_x_ModInit(UINT8 x ,UINT8 mode);
 
 /*******************************************************************************
 * Function Name  : mTimer_x_SetData(UINT8 x,UINT16 dat)
 * Description    : CH554Timer 
-* Input          : UINT16 dat;¶¨Ê±Æ÷¸³Öµ
-                   UINT8 x ¶¨Ê±Æ÷  0 1 2
+* Input          : UINT16 dat;å®šæ—¶å™¨èµ‹å€¼
+                   UINT8 x å®šæ—¶å™¨  0 1 2
 * Output         : None
 * Return         : None
 *******************************************************************************/
@@ -67,11 +67,11 @@ void mTimer_x_SetData(UINT8 x,UINT16 dat);
 
 /*******************************************************************************
 * Function Name  : CAP2Init(UINT8 mode)
-* Description    : CH554¶¨Ê±¼ÆÊıÆ÷2 T2EXÒı½Å²¶×½¹¦ÄÜ³õÊ¼»¯
-                   UINT8 mode,±ßÑØ²¶×½Ä£Ê½Ñ¡Ôñ
-                   0:T2ex´ÓÏÂ½µÑØµ½ÏÂÒ»¸öÏÂ½µÑØ
-                   1:T2exÈÎÒâ±ßÑØÖ®¼ä
-                   3:T2ex´ÓÉÏÉıÑØµ½ÏÂÒ»¸öÉÏÉıÑØ
+* Description    : CH554å®šæ—¶è®¡æ•°å™¨2 T2EXå¼•è„šæ•æ‰åŠŸèƒ½åˆå§‹åŒ–
+                   UINT8 mode,è¾¹æ²¿æ•æ‰æ¨¡å¼é€‰æ‹©
+                   0:T2exä»ä¸‹é™æ²¿åˆ°ä¸‹ä¸€ä¸ªä¸‹é™æ²¿
+                   1:T2exä»»æ„è¾¹æ²¿ä¹‹é—´
+                   3:T2exä»ä¸Šå‡æ²¿åˆ°ä¸‹ä¸€ä¸ªä¸Šå‡æ²¿
 * Input          : None
 * Output         : None
 * Return         : None
@@ -80,11 +80,11 @@ void CAP2Init(UINT8 mode);
 
 /*******************************************************************************
 * Function Name  : CAP1Init(UINT8 mode)
-* Description    : CH554¶¨Ê±¼ÆÊıÆ÷2 T2Òı½Å²¶×½¹¦ÄÜ³õÊ¼»¯T2
-                   UINT8 mode,±ßÑØ²¶×½Ä£Ê½Ñ¡Ôñ
-                   0:T2ex´ÓÏÂ½µÑØµ½ÏÂÒ»¸öÏÂ½µÑØ
-                   1:T2exÈÎÒâ±ßÑØÖ®¼ä
-                   3:T2ex´ÓÉÏÉıÑØµ½ÏÂÒ»¸öÉÏÉıÑØ
+* Description    : CH554å®šæ—¶è®¡æ•°å™¨2 T2å¼•è„šæ•æ‰åŠŸèƒ½åˆå§‹åŒ–T2
+                   UINT8 mode,è¾¹æ²¿æ•æ‰æ¨¡å¼é€‰æ‹©
+                   0:T2exä»ä¸‹é™æ²¿åˆ°ä¸‹ä¸€ä¸ªä¸‹é™æ²¿
+                   1:T2exä»»æ„è¾¹æ²¿ä¹‹é—´
+                   3:T2exä»ä¸Šå‡æ²¿åˆ°ä¸‹ä¸€ä¸ªä¸Šå‡æ²¿
 * Input          : None
 * Output         : None
 * Return         : None

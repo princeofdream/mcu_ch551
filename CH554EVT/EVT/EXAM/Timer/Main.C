@@ -4,8 +4,8 @@
 * Author             : WCH
 * Version            : V1.0
 * Date               : 2017/01/20
-* Description        : CH554 Time ³õÊ¼»¯¡¢¶¨Ê±Æ÷¡¢¼ÆÊıÆ÷¸³Öµ£¬T2²¶×½¹¦ÄÜµÈ
-                       ¶¨Ê±Æ÷ÖĞ¶Ï´¦Àí 
+* Description        : CH554 Time åˆå§‹åŒ–ã€å®šæ—¶å™¨ã€è®¡æ•°å™¨èµ‹å€¼ï¼ŒT2æ•æ‰åŠŸèƒ½ç­‰
+                       å®šæ—¶å™¨ä¸­æ–­å¤„ç† 
 *******************************************************************************/
 #include "..\Public\CH554.H"                                                  
 #include "..\Public\Debug.H"
@@ -19,30 +19,30 @@ UINT16 Cap[8] = {0};
 
 main( ) 
 {
-    CfgFsys( );                                                                //CH554Ê±ÖÓÑ¡ÔñÅäÖÃ   
-    mDelaymS(5);                                                               //ĞŞ¸ÄÖ÷Æµ£¬½¨ÒéÉÔ¼ÓÑÓÊ±µÈ´ıÖ÷ÆµÎÈ¶¨ 	
-    mInitSTDIO( );                                                             //´®¿Ú³õÊ¼»¯
+    CfgFsys( );                                                                //CH554æ—¶é’Ÿé€‰æ‹©é…ç½®   
+    mDelaymS(5);                                                               //ä¿®æ”¹ä¸»é¢‘ï¼Œå»ºè®®ç¨åŠ å»¶æ—¶ç­‰å¾…ä¸»é¢‘ç¨³å®š 	
+    mInitSTDIO( );                                                             //ä¸²å£åˆå§‹åŒ–
     printf("start ...\n"); 
 
 
 #ifdef T0_INT
     printf("T0 Test ...\n"); 
-    mTimer0Clk12DivFsys();	                                                   //T0¶¨Ê±Æ÷Ê±ÖÓÉèÖÃ
-    mTimer_x_ModInit(0,2);                                                     //T0 ¶¨Ê±Æ÷Ä£Ê½ÉèÖÃ
-    mTimer_x_SetData(0,0x5555);	                                               //T0¶¨Ê±Æ÷¸³Öµ
-    mTimer0RunCTL(1);                                                          //T0¶¨Ê±Æ÷Æô¶¯	
-    ET0 = 1;                                                                   //T0¶¨Ê±Æ÷ÖĞ¶Ï¿ªÆô		
+    mTimer0Clk12DivFsys();	                                                   //T0å®šæ—¶å™¨æ—¶é’Ÿè®¾ç½®
+    mTimer_x_ModInit(0,2);                                                     //T0 å®šæ—¶å™¨æ¨¡å¼è®¾ç½®
+    mTimer_x_SetData(0,0x5555);	                                               //T0å®šæ—¶å™¨èµ‹å€¼
+    mTimer0RunCTL(1);                                                          //T0å®šæ—¶å™¨å¯åŠ¨	
+    ET0 = 1;                                                                   //T0å®šæ—¶å™¨ä¸­æ–­å¼€å¯		
     EA = 1;
     while(1);
 #endif	
 
 #ifdef T1_INT
     printf("T1 Test ...\n"); 
-    mTimer1Clk12DivFsys();	                                                   //T1¶¨Ê±Æ÷Ê±ÖÓÉèÖÃ	
-    mTimer_x_ModInit(1,2);                                                     //T1 ¶¨Ê±Æ÷Ä£Ê½ÉèÖÃ
-    mTimer_x_SetData(1,0xEEEE);	                                               //T1¶¨Ê±Æ÷¸³Öµ
-    mTimer1RunCTL(1);                                                          //T1¶¨Ê±Æ÷Æô¶¯		
-    ET1 = 1;                                                                   //T1¶¨Ê±Æ÷ÖĞ¶Ï¿ªÆô		
+    mTimer1Clk12DivFsys();	                                                   //T1å®šæ—¶å™¨æ—¶é’Ÿè®¾ç½®	
+    mTimer_x_ModInit(1,2);                                                     //T1 å®šæ—¶å™¨æ¨¡å¼è®¾ç½®
+    mTimer_x_SetData(1,0xEEEE);	                                               //T1å®šæ—¶å™¨èµ‹å€¼
+    mTimer1RunCTL(1);                                                          //T1å®šæ—¶å™¨å¯åŠ¨		
+    ET1 = 1;                                                                   //T1å®šæ—¶å™¨ä¸­æ–­å¼€å¯		
     EA = 1;
     while(1); 
 #endif	
@@ -50,11 +50,11 @@ main( )
 
 #ifdef T2_INT
     printf("T2 Test ...\n"); 
-    mTimer2ClkFsys();	                                                         //T2¶¨Ê±Æ÷Ê±ÖÓÉèÖÃ
-    mTimer_x_ModInit(2,0);                                                     //T2 ¶¨Ê±Æ÷Ä£Ê½ÉèÖÃ
-    mTimer_x_SetData(2,0xAAAA);	                                               //T2¶¨Ê±Æ÷¸³Öµ
-    mTimer2RunCTL(1);                                                          //T2¶¨Ê±Æ÷Æô¶¯			
-    ET2 = 1;                                                                   //T2¶¨Ê±Æ÷ÖĞ¶Ï¿ªÆô		
+    mTimer2ClkFsys();	                                                         //T2å®šæ—¶å™¨æ—¶é’Ÿè®¾ç½®
+    mTimer_x_ModInit(2,0);                                                     //T2 å®šæ—¶å™¨æ¨¡å¼è®¾ç½®
+    mTimer_x_SetData(2,0xAAAA);	                                               //T2å®šæ—¶å™¨èµ‹å€¼
+    mTimer2RunCTL(1);                                                          //T2å®šæ—¶å™¨å¯åŠ¨			
+    ET2 = 1;                                                                   //T2å®šæ—¶å™¨ä¸­æ–­å¼€å¯		
     EA = 1;
     while(1); 
 #endif
@@ -62,12 +62,12 @@ main( )
 
 #ifdef T2_CAP
     printf("T2_CAP Test ...\n"); 
-    mTimer2ClkFsys();                                                         //T2¶¨Ê±Æ÷Ê±ÖÓÉèÖÃ
-    mTimer_x_SetData(2,0);                                                    //T2 ¶¨Ê±Æ÷Ä£Ê½ÉèÖÃ²¶×½Ä£Ê½		
-    CAP2Init(1);	                                                            //T2 CAP2ÉèÖÃ£¬ÈÎÒâÑØ²¶×½
-    CAP1Init(1);	                                                            //T2 CAP2ÉèÖÃ£¬ÈÎÒâÑØ²¶×½
-    mTimer2RunCTL(1);                                                         //T2¶¨Ê±Æ÷Æô¶¯			
-    ET2 = 1;                                                                  //T2¶¨Ê±Æ÷ÖĞ¶Ï¿ªÆô	
+    mTimer2ClkFsys();                                                         //T2å®šæ—¶å™¨æ—¶é’Ÿè®¾ç½®
+    mTimer_x_SetData(2,0);                                                    //T2 å®šæ—¶å™¨æ¨¡å¼è®¾ç½®æ•æ‰æ¨¡å¼		
+    CAP2Init(1);	                                                            //T2 CAP2è®¾ç½®ï¼Œä»»æ„æ²¿æ•æ‰
+    CAP1Init(1);	                                                            //T2 CAP2è®¾ç½®ï¼Œä»»æ„æ²¿æ•æ‰
+    mTimer2RunCTL(1);                                                         //T2å®šæ—¶å™¨å¯åŠ¨			
+    ET2 = 1;                                                                  //T2å®šæ—¶å™¨ä¸­æ–­å¼€å¯	
     EA = 1;
     while(1); 		
 #endif

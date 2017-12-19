@@ -4,7 +4,7 @@
 * Author             : WCH
 * Version            : V1.0
 * Date               : 2017/01/20
-* Description        : GPIO ÉèÖÃÓëÊ¹ÓÃºÍGPIOÖĞ¶ÏÊ¹ÓÃÊ¾Àı   
+* Description        : GPIO è®¾ç½®ä¸ä½¿ç”¨å’ŒGPIOä¸­æ–­ä½¿ç”¨ç¤ºä¾‹   
 *******************************************************************************/
 #include "..\Public\CH554.H"                                                   
 #include "..\Public\Debug.H"
@@ -17,13 +17,13 @@
 void main( ) 
 {
     UINT16 j = 0;
-    CfgFsys( );                                                                //CH554Ê±ÖÓÑ¡ÔñÅäÖÃ   
+    CfgFsys( );                                                                //CH554æ—¶é’Ÿé€‰æ‹©é…ç½®   
     mDelaymS(20);
-    mInitSTDIO( );                                                             //´®¿Ú0³õÊ¼»¯
+    mInitSTDIO( );                                                             //ä¸²å£0åˆå§‹åŒ–
     printf("start ...\n"); 
 
 #if GPIO_INTERRUPT
-    GPIOInterruptCfg();                                                        //GPIOÖĞ¶ÏÅäÖÃº¯Êı	
+    GPIOInterruptCfg();                                                        //GPIOä¸­æ–­é…ç½®å‡½æ•°	
     EA = 1;
     printf("Run"); 
     while(1){
@@ -31,7 +31,7 @@ void main( )
       mDelaymS(50);			
     }
 #endif	
-    Port1Cfg(3,4);                                                             //P14ÉèÖÃ³ÉÀà51Ë«ÏòÄ£Ê½         
+    Port1Cfg(3,4);                                                             //P14è®¾ç½®æˆç±»51åŒå‘æ¨¡å¼         
     while(1){
       SCS = ~SCS;
       mDelaymS(50);			

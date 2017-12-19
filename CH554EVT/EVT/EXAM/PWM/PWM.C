@@ -3,7 +3,7 @@
 * Author             : WCH
 * Version            : V1.0
 * Date               : 2017/01/20
-* Description        : CH554 PWMÖĞ¶ÏÊ¹ÄÜºÍÖĞ¶Ï´¦Àí               				   
+* Description        : CH554 PWMä¸­æ–­ä½¿èƒ½å’Œä¸­æ–­å¤„ç†               				   
 *******************************************************************************/
 
 #include "..\Public\CH554.H"                                                 
@@ -16,27 +16,27 @@
 #if PWM_INTERRUPT
 /*******************************************************************************
 * Function Name  : PWMInterruptEnable()
-* Description    : PWMÖĞ¶ÏÊ¹ÄÜ
+* Description    : PWMä¸­æ–­ä½¿èƒ½
 * Input          : None
 * Output         : None
 * Return         : None
 *******************************************************************************/
 void  PWMInterruptEnable()
 {
-    PWM_CTRL |= bPWM_IF_END | bPWM_IE_END;                                      //Çå³ıPWMÖĞ¶Ï£¬Ê¹ÄÜPWMÖĞ¶Ï
+    PWM_CTRL |= bPWM_IF_END | bPWM_IE_END;                                      //æ¸…é™¤PWMä¸­æ–­ï¼Œä½¿èƒ½PWMä¸­æ–­
     IE_PWMX = 1;	
 }
 
 /*******************************************************************************
 * Function Name  : PWMInterrupt(void)
-* Description    : PWMÖĞ¶Ï·şÎñ³ÌĞò   
+* Description    : PWMä¸­æ–­æœåŠ¡ç¨‹åº   
 *******************************************************************************/
-void	PWMInterrupt( void ) interrupt INT_NO_PWMX using 1                      //PWM1&2ÖĞ¶Ï·şÎñ³ÌĞò,Ê¹ÓÃ¼Ä´æÆ÷×é1
+void	PWMInterrupt( void ) interrupt INT_NO_PWMX using 1                      //PWM1&2ä¸­æ–­æœåŠ¡ç¨‹åº,ä½¿ç”¨å¯„å­˜å™¨ç»„1
 {
-    PWM_CTRL |= bPWM_IF_END;                                                  //Çå³ıPWMÖĞ¶Ï
+    PWM_CTRL |= bPWM_IF_END;                                                  //æ¸…é™¤PWMä¸­æ–­
     SetPWM1Dat(0x10);
     SetPWM2Dat(0x40);	
-//     printf("PWM_CTRL  %02X\n",(UINT16)PWM_CTRL);                           //¿ªÆô¿ÉÒÔÓÃÓÚ²é¿´ÊÇ·ñ½øÈëÖĞ¶Ï	
+//     printf("PWM_CTRL  %02X\n",(UINT16)PWM_CTRL);                           //å¼€å¯å¯ä»¥ç”¨äºæŸ¥çœ‹æ˜¯å¦è¿›å…¥ä¸­æ–­	
 }
 #endif
 

@@ -4,7 +4,7 @@
 * Author             : WCH
 * Version            : V1.0
 * Date               : 2017/01/20
-* Description        : CH554 IO ÉèÖÃ½Ó¿Úº¯ÊýºÍGPIOÖÐ¶Ïº¯Êý  
+* Description        : CH554 IO è®¾ç½®æŽ¥å£å‡½æ•°å’ŒGPIOä¸­æ–­å‡½æ•°  
 *******************************************************************************/
 
 #include "..\Public\CH554.H"                                                          
@@ -16,11 +16,11 @@
 
 /*******************************************************************************
 * Function Name  : Port1Cfg()
-* Description    : ¶Ë¿Ú1ÅäÖÃ
-* Input          : Mode  0 = ¸¡¿ÕÊäÈë£¬ÎÞÉÏÀ­
-                         1 = ÍÆÍìÊäÈëÊä³ö
-                         2 = ¿ªÂ©ÊäÈëÊä³ö£¬ÎÞÉÏÀ­
-                         3 = Àà51Ä£Ê½£¬¿ªÂ©ÊäÈëÊä³ö£¬ÓÐÉÏÀ­£¬ÄÚ²¿µçÂ·¿ÉÒÔ¼ÓËÙÓÉµÍµ½¸ßµÄµçÆ½ÅÀÉý		
+* Description    : ç«¯å£1é…ç½®
+* Input          : Mode  0 = æµ®ç©ºè¾“å…¥ï¼Œæ— ä¸Šæ‹‰
+                         1 = æŽ¨æŒ½è¾“å…¥è¾“å‡º
+                         2 = å¼€æ¼è¾“å…¥è¾“å‡ºï¼Œæ— ä¸Šæ‹‰
+                         3 = ç±»51æ¨¡å¼ï¼Œå¼€æ¼è¾“å…¥è¾“å‡ºï¼Œæœ‰ä¸Šæ‹‰ï¼Œå†…éƒ¨ç”µè·¯å¯ä»¥åŠ é€Ÿç”±ä½Žåˆ°é«˜çš„ç”µå¹³çˆ¬å‡		
                    ,UINT8 Pin	(0-7)											 
 * Output         : None
 * Return         : None
@@ -51,11 +51,11 @@ void Port1Cfg(UINT8 Mode,UINT8 Pin)
 
 /*******************************************************************************
 * Function Name  : Port3Cfg()
-* Description    : ¶Ë¿Ú3ÅäÖÃ
-* Input          : Mode  0 = ¸¡¿ÕÊäÈë£¬ÎÞÉÏÀ­
-                         1 = ÍÆÍìÊäÈëÊä³ö
-                         2 = ¿ªÂ©ÊäÈëÊä³ö£¬ÎÞÉÏÀ­
-                         3 = Àà51Ä£Ê½£¬¿ªÂ©ÊäÈëÊä³ö£¬ÓÐÉÏÀ­£¬ÄÚ²¿µçÂ·¿ÉÒÔ¼ÓËÙÓÉµÍµ½¸ßµÄµçÆ½ÅÀÉý		
+* Description    : ç«¯å£3é…ç½®
+* Input          : Mode  0 = æµ®ç©ºè¾“å…¥ï¼Œæ— ä¸Šæ‹‰
+                         1 = æŽ¨æŒ½è¾“å…¥è¾“å‡º
+                         2 = å¼€æ¼è¾“å…¥è¾“å‡ºï¼Œæ— ä¸Šæ‹‰
+                         3 = ç±»51æ¨¡å¼ï¼Œå¼€æ¼è¾“å…¥è¾“å‡ºï¼Œæœ‰ä¸Šæ‹‰ï¼Œå†…éƒ¨ç”µè·¯å¯ä»¥åŠ é€Ÿç”±ä½Žåˆ°é«˜çš„ç”µå¹³çˆ¬å‡		
                    ,UINT8 Pin	(0-7)											 
 * Output         : None
 * Return         : None
@@ -86,29 +86,29 @@ void Port3Cfg(UINT8 Mode,UINT8 Pin)
 
 /*******************************************************************************
 * Function Name  : GPIOInterruptCfg()
-* Description    : GPIOÖÐ¶ÏÅäÖÃ
+* Description    : GPIOä¸­æ–­é…ç½®
 * Input          : None									 
 * Output         : None
 * Return         : None
 *******************************************************************************/
 void GPIOInterruptCfg()
 {
-   GPIO_IE &= ~bIE_IO_EDGE;                                                    //¸ß/µÍµçÆ½´¥·¢
-//    GPIO_IE |= bIE_IO_EDGE;                                                  //ÉÏÉý/ÏÂ½µ´¥·¢  
-//    GPIO_IE |= bIE_RXD1_LO;                                                     //RXD1µÍµçÆ½»òÏÂ½µÑØ´¥·¢
+   GPIO_IE &= ~bIE_IO_EDGE;                                                    //é«˜/ä½Žç”µå¹³è§¦å‘
+//    GPIO_IE |= bIE_IO_EDGE;                                                  //ä¸Šå‡/ä¸‹é™è§¦å‘  
+//    GPIO_IE |= bIE_RXD1_LO;                                                     //RXD1ä½Žç”µå¹³æˆ–ä¸‹é™æ²¿è§¦å‘
    GPIO_IE |= bIE_P1_5_LO | bIE_P1_4_LO | bIE_P1_3_LO | bIE_RST_HI;            
-   //P15\P14\P13µÍµçÆ½´¥·¢£»RST¸ßµçÆ½´¥·¢
-//    GPIO_IE |= bIE_P3_1_LO;                                                     //P31µÍµçÆ½»òÏÂ½µÑØ´¥·¢
-//    GPIO_IE |= bIE_RXD0_LO;                                                     //RXD0µÍµçÆ½»òÏÂ½µÑØ´¥·¢	
-   IE_GPIO  = 1;                                                               //GPIOÖÐ¶Ï¿ªÆô
+   //P15\P14\P13ä½Žç”µå¹³è§¦å‘ï¼›RSTé«˜ç”µå¹³è§¦å‘
+//    GPIO_IE |= bIE_P3_1_LO;                                                     //P31ä½Žç”µå¹³æˆ–ä¸‹é™æ²¿è§¦å‘
+//    GPIO_IE |= bIE_RXD0_LO;                                                     //RXD0ä½Žç”µå¹³æˆ–ä¸‹é™æ²¿è§¦å‘	
+   IE_GPIO  = 1;                                                               //GPIOä¸­æ–­å¼€å¯
 }
 
 #ifdef GPIO_INTERRUPT
 /*******************************************************************************
 * Function Name  : GPIOInterrupt(void)
-* Description    : GPIO ÖÐ¶Ï·þÎñ³ÌÐò
+* Description    : GPIO ä¸­æ–­æœåŠ¡ç¨‹åº
 *******************************************************************************/
-void	GPIOInterrupt( void ) interrupt INT_NO_GPIO  using 1                      //GPIOÖÐ¶Ï·þÎñ³ÌÐò,Ê¹ÓÃ¼Ä´æÆ÷×é1
+void	GPIOInterrupt( void ) interrupt INT_NO_GPIO  using 1                      //GPIOä¸­æ–­æœåŠ¡ç¨‹åº,ä½¿ç”¨å¯„å­˜å™¨ç»„1
 { 
 #ifdef DE_PRINTF
       printf("GPIO_STATUS: %02x\n",(UINT16)(PIN_FUNC&bIO_INT_ACT));             
