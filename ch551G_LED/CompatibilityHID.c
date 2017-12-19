@@ -290,27 +290,11 @@ void    DeviceInterrupt( void ) interrupt INT_NO_USB using 1                    
 				UEP2_T_LEN = len;
 				UEP2_CTRL = UEP2_CTRL & ~ MASK_UEP_T_RES | UEP_T_RES_ACK;       // 允许上传
 				memset(get_buf,0x0,sizeof(get_buf));
-				while(1)
-				{
-					if(W_OK)
-					{
-						printf("delay 10ms\n");
-						mDelaymS(10);
-					}
-					else
-					{
-						W_OK = 1;
-						break;
-					}
-				}
 				for ( i = 0; i < len; i ++ )
 				{
 					get_buf[i] = Ep2Buffer[i];
 					/* printf("0x%04x ",get_buf[i]); */
 				}
-				IR_PIN = ! IR_PIN;
-				LED_G = ! LED_G;
-				LED_B = ! LED_B;
 				/* printf("\n"); */
 			}
 			break;
@@ -658,11 +642,8 @@ void hid_main()
 	
 	while(1)
 	{
-		#if 0
-		if(Ready && (Ep2InKey==0))
-		#else
+		/* if(Ready && (Ep2InKey==0)) */
 		if(Ready)
-		#endif
 		{
 			//print("sent file");
 			Enp2BlukIn( );

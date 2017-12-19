@@ -1,7 +1,7 @@
 
 #define INTERRUPT_TouchKey   1                                                 //开启TouchKey中断方式
 
-#define KEY_FIRST            0                                                 //采样起始通道                                      
+#define KEY_FIRST            0                                                 //采样起始通道
 #define KEY_LAST             3                                                 //采样结束通道
 #define KEY_ACT              20                                                //按键按下，通道采样值减小，该值减小，灵敏度高，该值增大，灵敏度低
 #define KEY_BASE_SAMPLE_TIME 5                                                 //采样基准值采样次数，为了取到稳定的通道基准值
@@ -30,7 +30,7 @@ UINT8 TouchKeyChannelSelect(UINT8 ch);
 /*******************************************************************************
 * Function Name  : GetTouckKeyFreeBuf()
 * Description    : 获取触摸按键空间状态键值
-* Input          : None								 
+* Input          : None
 * Output         : None
 * Return         : None
 *******************************************************************************/
