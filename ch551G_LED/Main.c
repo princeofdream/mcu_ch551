@@ -14,37 +14,31 @@
 
 #pragma  NOAREGS
 
-#define	LED_PIN 5
-sbit	LED=P1^5;
-sbit	LED_B=P3^3;
-sbit	IR_PIN=P3^4;
-sbit	LED_G=P3^0;
 
 int led_main()
 {
 	int i;
 
-    CfgFsys( );                                                                //CH554时钟选择配置
-    mDelaymS(5);
+	CfgFsys( );                                                                //CH554时钟选择配置
+	mDelaymS(5);
 	mInitSTDIO();
 
 	P3_DIR_PU=0xFF;
-	
 	i=6;
-			printf("%x\n ",i >> 0);
-			printf("%x\n ",i >> 1);
-			printf("%x\n ",i >> 2);
-			printf("%x\n ",i >> 3);
-			printf("%x\n ",i >> 4);
-			printf("%x\n ",i >> 5);
-			printf("%x\n ",i >> 6);
-			printf("%x\n ",i >> 7);
-			printf("%x\n ",i >> 8);
-	
-    while(1)
-    {
-        mDelaymS(500);
-        //LED=!LED;
+	printf("%x\n ",i >> 0);
+	printf("%x\n ",i >> 1);
+	printf("%x\n ",i >> 2);
+	printf("%x\n ",i >> 3);
+	printf("%x\n ",i >> 4);
+	printf("%x\n ",i >> 5);
+	printf("%x\n ",i >> 6);
+	printf("%x\n ",i >> 7);
+	printf("%x\n ",i >> 8);
+
+	while(1)
+	{
+		mDelaymS(500);
+		//LED=!LED;
 
 		//P3=~P3;
 		//P1=0;
@@ -54,9 +48,6 @@ int led_main()
 	 
 		CH554UART0SendByte('R');
 		CH554UART0SendByte('S');
-
-
-       
     }
 
 }

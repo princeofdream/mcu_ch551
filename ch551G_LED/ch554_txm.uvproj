@@ -371,6 +371,11 @@
               <FileType>1</FileType>
               <FilePath>.\CompatibilityHID.C</FilePath>
             </File>
+            <File>
+              <FileName>CH554.H</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\CH554.H</FilePath>
+            </File>
           </Files>
         </Group>
       </Groups>

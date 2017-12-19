@@ -1145,6 +1145,13 @@ typedef struct _UDISK_BOC_CSW {         /* status of BulkOnly USB-FlashDisk */
 
 typedef UDISK_BOC_CSW xdata *PXUDISK_BOC_CSW;
 
+
+#define	LED_PIN 5
+sbit	LED=P1^5;
+sbit	LED_B=P3^3;
+sbit	IR_PIN=P3^4;
+sbit	LED_G=P3^0;
+
 #ifdef __cplusplus
 }
 #endif

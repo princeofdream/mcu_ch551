@@ -278,6 +278,7 @@ void    DeviceInterrupt( void ) interrupt INT_NO_USB using 1                    
 			//            UEP1_CTRL ^= bUEP_T_TOG;                                          //如果不设置自动翻转则需要手动翻转
 			UEP2_CTRL = UEP2_CTRL & ~ MASK_UEP_T_RES | UEP_T_RES_NAK;           //默认应答NAK
 			break;
+		//hid_write
 		case UIS_TOKEN_OUT | 2:                                                 //endpoint 2# 端点批量下传
 			if ( U_TOG_OK )                                                     // 不同步的数据包将丢弃
 			{
@@ -292,7 +293,10 @@ void    DeviceInterrupt( void ) interrupt INT_NO_USB using 1                    
 				while(1)
 				{
 					if(W_OK)
-						mDelaymS( 100 );
+					{
+						printf("delay 10ms\n");
+						mDelaymS(10);
+					}
 					else
 					{
 						W_OK = 1;
@@ -302,7 +306,12 @@ void    DeviceInterrupt( void ) interrupt INT_NO_USB using 1                    
 				for ( i = 0; i < len; i ++ )
 				{
 					get_buf[i] = Ep2Buffer[i];
+					/* printf("0x%04x ",get_buf[i]); */
 				}
+				IR_PIN = ! IR_PIN;
+				LED_G = ! LED_G;
+				LED_B = ! LED_B;
+				/* printf("\n"); */
 			}
 			break;
 		case UIS_TOKEN_SETUP | 0:                                               //SETUP事务
@@ -662,6 +671,7 @@ void hid_main()
 		}
 		if(W_OK)
 		{
+			printf("get write data:\n",get_buf[i]);
 			for ( i = 0; i < sizeof(get_buf); i ++ )
 			{
 				printf("%04x ",get_buf[i]);
@@ -670,6 +680,7 @@ void hid_main()
 				else if(i%16==15)
 					printf("\n");
 			}
+			printf("------------\n",get_buf[i]);
 
 			W_OK=0;
 		}
