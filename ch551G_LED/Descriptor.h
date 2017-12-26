@@ -1,8 +1,5 @@
-//#include "mytype.h"
-//#include "hiduse.h"
-
-#include "./CH554.H"
-#include "./Debug.H"
+#include "./CH554.h"
+#include "./Debug.h"
 
 #ifndef _descriptor_h_
 #define _descriptor_h_

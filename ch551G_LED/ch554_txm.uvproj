@@ -362,19 +362,39 @@
               <FilePath>.\Main.C</FilePath>
             </File>
             <File>
-              <FileName>TouchKey.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\TouchKey.C</FilePath>
-            </File>
-            <File>
               <FileName>CompatibilityHID.C</FileName>
               <FileType>1</FileType>
               <FilePath>.\CompatibilityHID.C</FilePath>
             </File>
             <File>
-              <FileName>CH554.H</FileName>
+              <FileName>CH552.h</FileName>
               <FileType>5</FileType>
-              <FilePath>.\CH554.H</FilePath>
+              <FilePath>.\CH552.h</FilePath>
+            </File>
+            <File>
+              <FileName>nec.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\nec.c</FilePath>
+            </File>
+            <File>
+              <FileName>Main.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Main.c</FilePath>
+            </File>
+            <File>
+              <FileName>Timer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Timer.c</FilePath>
+            </File>
+            <File>
+              <FileName>Timer_Main.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Timer_Main.c</FilePath>
+            </File>
+            <File>
+              <FileName>Timer.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Timer.h</FilePath>
             </File>
           </Files>
         </Group>
