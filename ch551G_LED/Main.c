@@ -18,8 +18,8 @@ main()
 	mDelaymS(5);                                                          //修改主频等待内部晶振稳定,必加
 	mInitSTDIO( );                                                        //串口0初始化
 
-	IR_PIN = 1;
-	LED_B=1;
+	IR_PIN = LOGIC_ZERO;
+	LED_B=LOGIC_ZERO;
 	/* timer_main(); */
 	hid_main();
 	/* nec_init(); */

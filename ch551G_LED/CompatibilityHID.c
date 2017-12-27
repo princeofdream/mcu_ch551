@@ -16,17 +16,17 @@
 #else
 #define THIS_ENDP0_SIZE         DEFAULT_ENDP0_SIZE
 #endif
-UINT8X  Ep0Buffer[8>(THIS_ENDP0_SIZE+2)?8:(THIS_ENDP0_SIZE+2)] _at_ 0x0000;        //端点0 OUT&IN缓冲区，必须是偶地址
-UINT8X  Ep2Buffer[128>(2*MAX_PACKET_SIZE+4)?128:(2*MAX_PACKET_SIZE+4)] _at_ 0x0044;//端点2 IN&OUT缓冲区,必须是偶地址
-UINT8   SetupReq,SetupLen,Ready,Count,FLAG,UsbConfig;
-UINT8X  GET_HID_WRITE = 0;
+UINT16X  Ep0Buffer[8>(THIS_ENDP0_SIZE+2)?8:(THIS_ENDP0_SIZE+2)] _at_ 0x0000;        //端点0 OUT&IN缓冲区，必须是偶地址
+UINT16X  Ep2Buffer[128>(2*MAX_PACKET_SIZE+4)?128:(2*MAX_PACKET_SIZE+4)] _at_ 0x0044;//端点2 IN&OUT缓冲区,必须是偶地址
+UINT8   SetupReq,SetupLen,Ready,UsbConfig;
+UINT16X  GET_HID_WRITE = 0;
 PUINT8  pDescr;                                                                    //USB配置标志
 USB_SETUP_REQ   SetupReqBuf;                                                       //暂存Setup包
-#define UsbSetupBuf     ((PUSB_SETUP_REQ)Ep0Buffer)  
+#define UsbSetupBuf     ((PUSB_SETUP_REQ)Ep0Buffer)
 
 sbit Ep2InKey = P1^5;                                                              //K1按键
 #pragma  NOAREGS
-UINT8X get_buf[THIS_ENDP0_SIZE];
+UINT16X get_buf[THIS_ENDP0_SIZE];
 
 //#define SWAP16(x)  ((((UINT16)(x))<<8)|(((UINT16)(x))>>8))
 
@@ -98,7 +98,6 @@ UINT8C CfgDesc[41] =
 			0x00,
 			0x18
 		//}
-		
 #else
 		//端点1输出
 		//{
@@ -207,20 +206,45 @@ char code HidUseReportDescriptor[47] =
  	0xC0	// end collection
 };
 
-void hid_write_handler(UINT8X *hid_buf,int len)
+void hid_write_handler(UINT16X *hid_buf,UINT16X len)
 {
-#if 1
-	unsigned int vendor_code = 0;
-	unsigned int keycode = 0;
-	vendor_code = ((hid_buf[0] >> 8) || hid_buf[1] & 0xFF00);
-	printf("\nhid_buf[0]:0x%x, hid_buf[1]:0x%x, \nvendor_code:0x%x, keycode: 0x%x\n",hid_buf[0],hid_buf[1],vendor_code,keycode);
-	/* nec_init(); */
-	/* nec_enable_timer_interrupt(0); */
+	UINT16X protocol = 0;
+#if 0
+	UINT16 vendor_code = 0;
+	UINT16 keycode = 0;
+	UINT16 repeat = 0;
+	UINT16X i=0;
+
+	vendor_code = hid_buf[1];
+	keycode     = hid_buf[2];
+	repeat      = hid_buf[3];
+#endif
+	protocol    = hid_buf[0];
+	/* printf("\nhid_buf[0]:0x%x, hid_buf[1]:0x%x, hid_buf[2]:0x%x, hid_buf[3]:0x%x, \n",hid_buf[0],hid_buf[1],hid_buf[2],hid_buf[3]); */
+
+	printf("protocol: 0x%04x\n",protocol);
+	if((protocol & IR_PROTOCOL_NEC) == IR_PROTOCOL_NEC)
+	{
+		printf("nec protocol\n");
+		nec_init(hid_buf);
+	}
+#if 0
+	else if((protocol & IR_PROTOCOL_RC5) == IR_PROTOCOL_RC5)
+		rc5_init(protocol);
+	else if((protocol & IR_PROTOCOL_RC6) == IR_PROTOCOL_RC6)
+		rc6_init(protocol);
+#endif
+	else
+		return ;
+
+	//have pwm in pluse
+	if((protocol & IR_WITH_PWM_MASK) != NULL )
+	{
+		//use timer 0 to generate pwm
+		nec_enable_timer_interrupt(0);
+	}
 	nec_enable_timer_interrupt(2);
 	/* nec_emmit(vendor_code, keycode); */
-#else
-	timer_main();
-#endif
 }
 
 
@@ -307,10 +331,10 @@ void    DeviceInterrupt( void ) interrupt INT_NO_USB using 1                    
 				for ( i = 0; i < len; i ++ )
 				{
 					get_buf[i] = Ep2Buffer[i];
-					printf("0x%04x ",get_buf[i]);
+					/* printf("0x%04x ",get_buf[i]); */
 				}
-				printf("\n");
-				GET_HID_WRITE = 1;
+				/* printf("\n"); */
+				GET_HID_WRITE = len;
 			}
 			break;
 		case UIS_TOKEN_SETUP | 0:                                               //SETUP事务
@@ -625,7 +649,7 @@ void    DeviceInterrupt( void ) interrupt INT_NO_USB using 1                    
 
 void hid_main()
 {
-	/* UINT8 i; */
+	UINT16X i;
 #ifdef DE_PRINTF
 	printf("start ...\n");
 #endif
@@ -640,14 +664,13 @@ void hid_main()
 	UserEp2Buf[62] = 'e';
 	UserEp2Buf[63] = 's';
 #endif
-	
+
 	USBDeviceInit();                                                      //USB设备模式初始化
 	EA = 1;                                                               //允许单片机中断
 	UEP1_T_LEN = 0;                                                       //预使用发送长度一定要清空
 	UEP2_T_LEN = 0;                                                       //预使用发送长度一定要清空
-	FLAG = 0;
 	Ready = 0;
-	
+
 	while(1)
 	{
 		/* if(Ready && (Ep2InKey==0)) */
@@ -660,8 +683,32 @@ void hid_main()
 		}
 		if (GET_HID_WRITE)
 		{
+#if 1
+			for ( i = 0; i < GET_HID_WRITE; i ++ )
+			{
+				printf("0x%04x ",get_buf[i]);
+				switch (i) {
+					case 8-1:
+					case 24-1:
+					case 40-1:
+					case 56-1:
+						printf("\t");
+						break;
+					case 16-1:
+					case 32-1:
+					case 48-1:
+					case 64-1:
+						printf("\n");
+						break;
+					default:
+						break;
+				}
+			}
+			printf("\n");
+			printf("i: 0x%x, Len: 0x%x\n",i, GET_HID_WRITE);
+#endif
+			hid_write_handler(get_buf,GET_HID_WRITE);
 			GET_HID_WRITE = 0;
-			hid_write_handler(get_buf,UEP2_T_LEN);
 		}
 
 		mDelaymS( 100 );                                                   //模拟单片机做其它事

@@ -387,11 +387,6 @@
               <FilePath>.\Timer.c</FilePath>
             </File>
             <File>
-              <FileName>Timer_Main.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Timer_Main.c</FilePath>
-            </File>
-            <File>
               <FileName>Timer.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Timer.h</FilePath>

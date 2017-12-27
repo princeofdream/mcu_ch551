@@ -1,15 +1,11 @@
+#ifndef __TIMER_H__
+#define __TIMER_H__
 
 #define USING_T0_T2
+#include "CompatibilityHID.h"
 
-#ifndef USING_T0_T2
-// #define  T0_INT   1                                                        //T中断开启
-// #define  T1_INT   1
-// #define  T2_INT   1
-// #define  T2_CAP   1
-#endif
-
-extern UINT8 TIMER_FLAG;
-extern UINT16 Cap[8];
+#define LOGIC_ZERO 0
+#define LOGIC_ONE 1
 
 //CH554 Timer0时钟选择
 //bTMR_CLK同时影响Timer0&1&2,使用时要注意 (除定时使用标准时钟)
@@ -21,14 +17,6 @@ extern UINT16 Cap[8];
 //CH554 Timer0 开始(SS=1)/结束(SS=0)
 #define mTimer0RunCTL( SS )    (TR0 = SS ? START : STOP)
 
-
-#define mTimer1Clk12DivFsys( ) (T2MOD &= ~bT1_CLK)                          //定时器,时钟=Fsys/12  T1标准时钟
-#define mTimer1ClkFsys( )      (T2MOD |= bTMR_CLK | bT1_CLK)                //定时器,时钟=Fsys
-#define mTimer1Clk4DivFsys( )  (T2MOD &= ~bTMR_CLK;T2MOD |=  bT1_CLK)       //定时器,时钟=Fsys/4
-#define mTimer1CountClk( )     (TMOD |= bT1_CT)                             //计数器,T0引脚的下降沿有效
-
-//CH554 Timer1 开始(SS=1)/结束(SS=0)
-#define mTimer1RunCTL( SS )    (TR1 = SS ? START : STOP)
 
 
 #define mTimer2Clk12DivFsys( ) {T2MOD &= ~(bTMR_CLK | bT2_CLK);C_T2 = 0;}      //定时器,时钟=Fsys/12 T2标准时钟
@@ -79,21 +67,8 @@ void mTimer_x_SetData(UINT8 x,UINT16 dat);
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void CAP2Init(UINT8 mode);
 
-/*******************************************************************************
-* Function Name  : CAP1Init(UINT8 mode)
-* Description    : CH554定时计数器2 T2引脚捕捉功能初始化T2
-                   UINT8 mode,边沿捕捉模式选择
-                   0:T2ex从下降沿到下一个下降沿
-                   1:T2ex任意边沿之间
-                   3:T2ex从上升沿到下一个上升沿
-* Input          : None
-* Output         : None
-* Return         : None
-*******************************************************************************/
-void CAP1Init(UINT8 mode);
+void set_protocol(int value);
 
-void timer_main();
-void set_procotol(int value);
+#endif
 
