@@ -23,4 +23,6 @@ void nec_enable_timer_interrupt(int value);
 void nec_emmit(unsigned int vendor_code,unsigned int keycode);
 void start_nec_transfer(int mode_loop);
 
+void pwm_main();
+
 #endif

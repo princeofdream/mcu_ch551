@@ -179,7 +179,9 @@ sfr GLOBAL_CFG      = 0xB1;         // global config, Write@SafeMode
 #define bWDOG_EN          0x01      // enable watch-dog reset if watch-dog timer overflow: 0=as timer only, 1=enable reset if timer overflow
 
 /* Clock and Sleep and Power Registers */
+//0bxxxx_x110 //fsys the same clk as fsoc 32M?
 sfr PCON            = 0x87;         // power control and reset flag
+// sfr PCON            = 0x86;         // power control and reset flag
 #define SMOD              0x80      // baud rate selection for UART0 mode 1/2/3: 0=slow(Fsys/128 @mode2, TF1/32 @mode1/3, no effect for TF2),
                                     //   1=fast(Fsys/32 @mode2, TF1/16 @mode1/3, no effect for TF2)
 #define bRST_FLAG1        0x20      // ReadOnly: recent reset flag high bit

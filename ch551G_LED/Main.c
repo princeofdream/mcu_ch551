@@ -22,6 +22,7 @@ main()
 	LED_B=LOGIC_ZERO;
 	/* timer_main(); */
 	hid_main();
+	/* pwm_main(); */
 	/* nec_init(); */
 	/* nec_enable_timer_interrupt(0); */
 	/* nec_enable_timer_interrupt(2); */

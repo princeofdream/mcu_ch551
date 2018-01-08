@@ -307,11 +307,9 @@ void    DeviceInterrupt( void ) interrupt INT_NO_USB using 1                    
 	UINT8 len,i;
 	if(UIF_TRANSFER)                                                            //USB传输完成标志
 	{
-		//printf("==> 0x%x\n",USB_INT_ST);
 		switch (USB_INT_ST & (MASK_UIS_TOKEN | MASK_UIS_ENDP))
 		{
 		case UIS_TOKEN_IN | 2:                                                  //endpoint 2# 端点批量上传
-			//printf("UIS_TOKEN_IN");
 			UEP2_T_LEN = 0;                                                    //预使用发送长度一定要清空
 			//            UEP1_CTRL ^= bUEP_T_TOG;                                          //如果不设置自动翻转则需要手动翻转
 			UEP2_CTRL = UEP2_CTRL & ~ MASK_UEP_T_RES | UEP_T_RES_NAK;           //默认应答NAK
@@ -328,6 +326,7 @@ void    DeviceInterrupt( void ) interrupt INT_NO_USB using 1                    
 				UEP2_T_LEN = len;
 				UEP2_CTRL = UEP2_CTRL & ~ MASK_UEP_T_RES | UEP_T_RES_ACK;       // 允许上传
 				memset(get_buf,0x0,sizeof(get_buf));
+#if 1
 				for ( i = 0; i < len; i ++ )
 				{
 					get_buf[i] = Ep2Buffer[i];
@@ -335,6 +334,11 @@ void    DeviceInterrupt( void ) interrupt INT_NO_USB using 1                    
 				}
 				/* printf("\n"); */
 				GET_HID_WRITE = len;
+				LED_B = ~LED_B;
+#else
+				LED_B = ~LED_B;
+				/* T0=~T0; */
+#endif
 			}
 			break;
 		case UIS_TOKEN_SETUP | 0:                                               //SETUP事务
@@ -707,11 +711,13 @@ void hid_main()
 			printf("\n");
 			printf("i: 0x%x, Len: 0x%x\n",i, GET_HID_WRITE);
 #endif
-			hid_write_handler(get_buf,GET_HID_WRITE);
+			//hid_write_handler(get_buf,GET_HID_WRITE);
 			GET_HID_WRITE = 0;
 		}
 
-		mDelaymS( 100 );                                                   //模拟单片机做其它事
+		/* mDelaymS( 100 );                                                   //模拟单片机做其它事 */
+		mDelayuS( 50 );                                                   //模拟单片机做其它事
+		/* printf("loop......\n"); */
     }
 }
 #endif

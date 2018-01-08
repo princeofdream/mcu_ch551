@@ -33,7 +33,7 @@ UINT16 nec_keycode = 0;
 
 void start_nec_transfer(UINT8 mode_loop)
 {
-#if 1
+#if 0
 	if(mode_loop == 0)
 	{
 		mode_loop++;
